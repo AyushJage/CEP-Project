@@ -1,0 +1,125 @@
+# ===================================================================
+# JalSathi — Git Ignore Configuration
+# College Community Project — DBIT, Dept. of IT
+# ===================================================================
+
+# -------------------------------------------------------------------
+# Java & Maven Build Outputs
+# -------------------------------------------------------------------
+target/
+**/target/
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Maven Wrapper (keep wrapper binaries and configs)
+!mvnw
+!mvnw.cmd
+!**/mvnw
+!**/mvnw.cmd
+!.mvn/wrapper/maven-wrapper.properties
+!.mvn/wrapper/maven-wrapper.jar
+!**/.mvn/wrapper/maven-wrapper.properties
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# -------------------------------------------------------------------
+# Databases & Runtime State (Keep dataset CSVs in src/main/resources)
+# -------------------------------------------------------------------
+*.db
+*.mv.db
+*.trace.db
+backend/data/
+data/
+!backend/src/main/resources/data/**
+!src/main/resources/data/**
+
+# -------------------------------------------------------------------
+# Logs & Temporary Files
+# -------------------------------------------------------------------
+*.log
+logs/
+**/logs/
+temp/
+tmp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# -------------------------------------------------------------------
+# Node / Frontend Artifacts
+# -------------------------------------------------------------------
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# -------------------------------------------------------------------
+# IDE & Code Editors
+# -------------------------------------------------------------------
+# IntelliJ IDEA
+.idea/
+**/.idea/
+*.iml
+*.iws
+*.ipr
+out/
+**/out/
+
+# Visual Studio Code
+.vscode/
+**/.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+**/.project
+**/.classpath
+**/.settings/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+
+# -------------------------------------------------------------------
+# Operating System Artifacts
+# -------------------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+.directory
+.fuse_hidden*
+
