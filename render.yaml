@@ -4,12 +4,13 @@
 services:
   - type: web
     name: jalsathi-backend
-    env: docker
-    dockerfilePath: backend/Dockerfile
-    dockerContext: backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
     region: singapore
     autoDeploy: true
+    healthCheckPath: /api/meta/districts
     envVars:
       - key: PORT
         value: 8080
@@ -19,4 +20,3 @@ services:
         value: sa
       - key: DB_PASSWORD
         value: ""
-
