@@ -1,0 +1,22 @@
+# ===================================================================
+# Render Blueprint — Free Cloud Deployment for Spring Boot Backend
+# ===================================================================
+services:
+  - type: web
+    name: jalsathi-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: singapore
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_URL
+        value: jdbc:h2:file:./data/rwh_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+      - key: DB_USER
+        value: sa
+      - key: DB_PASSWORD
+        value: ""
+

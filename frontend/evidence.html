@@ -64,8 +64,12 @@
             }
         }
 
-        window.addEventListener('languageChange', loadEvidence);
-        loadEvidence();
+        // Wait for navbar (and language loading) to complete before rendering cards
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initNavbar();
+            window.addEventListener('languageChange', loadEvidence);
+            await loadEvidence();
+        });
     </script>
 </body>
 </html>

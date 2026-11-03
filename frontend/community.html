@@ -81,8 +81,12 @@
             }
         }
 
-        window.addEventListener('languageChange', loadPartners);
-        loadPartners();
+        // Wait for navbar (and language loading) to complete before rendering cards
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initNavbar();
+            window.addEventListener('languageChange', loadPartners);
+            await loadPartners();
+        });
     </script>
 </body>
 </html>

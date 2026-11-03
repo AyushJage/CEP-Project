@@ -123,3 +123,11 @@ $RECYCLE.BIN/
 .directory
 .fuse_hidden*
 
+# -------------------------------------------------------------------
+# Vercel Deployment & Build Artifacts
+# -------------------------------------------------------------------
+.vercel/
+.vercel
+*.vercel
+
+

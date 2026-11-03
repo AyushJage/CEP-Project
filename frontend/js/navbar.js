@@ -157,4 +157,8 @@ export async function initNavbar() {
 }
 
 // Auto-run if imported as module
-document.addEventListener('DOMContentLoaded', initNavbar);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavbar);
+} else {
+    initNavbar();
+}

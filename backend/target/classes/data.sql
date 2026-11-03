@@ -1,2 +1,0 @@
--- Initial seed data is automatically managed idempotently by DataLoader.java
--- Custom SQL inserts can be added here if needed for direct database scripts.

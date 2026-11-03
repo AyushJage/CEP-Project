@@ -2,9 +2,16 @@
 // api.js - Unified Fetch Wrapper with JWT, Error Handling, and Toasts
 // ===================================================================
 
-export const API_BASE = (typeof window !== 'undefined' && window.location.origin && (window.location.port === '8080' || window.location.origin.includes(':8080')))
-    ? '/api'
-    : 'http://localhost:8080/api';
+const customEndpoint = (typeof window !== 'undefined') ? localStorage.getItem('api_endpoint') : null;
+
+export const API_BASE = customEndpoint || (
+    (typeof window !== 'undefined' && (
+        (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') ||
+        window.location.port === '8080'
+    ))
+        ? '/api'
+        : 'http://localhost:8080/api'
+);
 
 export function getToken() {
     return localStorage.getItem('jwt_token');
