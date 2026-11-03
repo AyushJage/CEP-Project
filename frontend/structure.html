@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>पाणी साठवण रचना शोधक (Structure Feasibility) | RWH Monitor</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <main class="page-container" style="max-width: 1000px; margin: 2rem auto; padding: 0 1rem 5rem 1rem;">
+    <div style="margin-bottom: 1.5rem;">
+      <h1 style="margin: 0; color: var(--color-primary);" data-i18n="structure_feasibility_title">जलसंधारण रचना शोधक (Structure Feasibility Finder)</h1>
+      <p style="margin: 0.25rem 0 0 0; color: #666;" data-i18n="structure_feasibility_subtitle">
+        जमिनीचा प्रकार, उतार, भूजल पातळी आणि पावसावर आधारित योग्य जलसंधारण संरचनेची शिफारस
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem;" class="responsive-grid">
+      <!-- Input Parameters Form -->
+      <div class="card">
+        <h2 style="font-size: 1.25rem; margin-top: 0; color: var(--color-primary); display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚙️</span> <span data-i18n="land_parameters">जमीन आणि जल निकष प्रविष्ट करा</span>
+        </h2>
+        <form id="feasibilityForm" onsubmit="calculateFeasibility(event)">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="districtSelect" data-i18n="select_district">जिल्हा (District) *</label>
+            <select id="districtSelect" class="form-control" onchange="autoFillRainfall()" required>
+              <option value="Ahmednagar">अहमदनगर (Ahmednagar)</option>
+              <option value="Akola">अकोला (Akola)</option>
+              <option value="Amravati">अमरावती (Amravati)</option>
+              <option value="Chhatrapati Sambhajinagar">छत्रपती संभाजीनगर (Chhatrapati Sambhajinagar)</option>
+              <option value="Beed">बीड (Beed)</option>
+              <option value="Bhandara">भंडारा (Bhandara)</option>
+              <option value="Buldhana">बुलढाणा (Buldhana)</option>
+              <option value="Chandrapur">चंद्रपूर (Chandrapur)</option>
+              <option value="Dhule">धुळे (Dhule)</option>
+              <option value="Gadchiroli">गडचिरोली (Gadchiroli)</option>
+              <option value="Gondia">गोंदिया (Gondia)</option>
+              <option value="Hingoli">हिंगोली (Hingoli)</option>
+              <option value="Jalgaon">जळगाव (Jalgaon)</option>
+              <option value="Jalna">जालना (Jalna)</option>
+              <option value="Kolhapur">कोल्हापूर (Kolhapur)</option>
+              <option value="Latur">लातूर (Latur)</option>
+              <option value="Nagpur">नागपूर (Nagpur)</option>
+              <option value="Nanded">नांदेड (Nanded)</option>
+              <option value="Nandurbar">नंदुरबार (Nandurbar)</option>
+              <option value="Nashik">नाशिक (Nashik)</option>
+              <option value="Dharashiv">धाराशिव (Dharashiv)</option>
+              <option value="Palghar">पालघर (Palghar)</option>
+              <option value="Parbhani">परभणी (Parbhani)</option>
+              <option value="Pune" selected>पुणे (Pune)</option>
+              <option value="Raigad">रायगड (Raigad)</option>
+              <option value="Ratnagiri">रत्नागिरी (Ratnagiri)</option>
+              <option value="Sangli">सांगली (Sangli)</option>
+              <option value="Satara">सातारा (Satara)</option>
+              <option value="Sindhudurg">सिंधुदुर्ग (Sindhudurg)</option>
+              <option value="Solapur">सोलापूर (Solapur)</option>
+              <option value="Thane">ठाणे (Thane)</option>
+              <option value="Wardha">वर्धा (Wardha)</option>
+              <option value="Washim">वाशिम (Washim)</option>
+              <option value="Yavatmal">यवतमाळ (Yavatmal)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="catchmentArea" data-i18n="catchment_area">क्षेत्रफळ (Catchment Area) *</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="number" id="catchmentArea" class="form-control" style="flex: 2;" min="10" step="1" value="4000" required>
+              <select id="areaUnit" class="form-control" style="flex: 1;" onchange="convertUnitHint()">
+                <option value="sqm">चौ. मीटर (m²)</option>
+                <option value="guntha">गुंठा (Guntha)</option>
+                <option value="acre" selected>एकर (Acre)</option>
+                <option value="hectare">हेक्टर (Hectare)</option>
+              </select>
+            </div>
+            <small id="convertedAreaHint" style="color: #666;">= ४,०४७ चौ. मीटर (m²)</small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="landSlope" data-i18n="land_slope">जमिनीचा उतार (Land Slope) *</label>
+            <select id="landSlope" class="form-control" required>
+              <option value="FLAT">सपाट (Flat: ०% - २% उतार)</option>
+              <option value="GENTLE" selected>मध्यम मंद उतार (Gentle: २% - ५% उतार)</option>
+              <option value="STEEP">तीव्र उतार / डोंगर पायथा (Steep: > ५% उतार)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="soilType" data-i18n="soil_type">मातीचा प्रकार (Soil Type) *</label>
+            <select id="soilType" class="form-control" required>
+              <option value="BLACK_COTTON" selected>काळी कसदार / रेगूर माती (Black Cotton)</option>
+              <option value="RED_LOAMY">तांबडी गाळाची माती (Red Loamy)</option>
+              <option value="LATERITE">जांभा खडक / माती (Laterite - कोकण)</option>
+              <option value="CLAYEY">चिकण माती (Clayey - पाणी धरून ठेवणारी)</option>
+              <option value="SANDY">हलकी वाळूमिश्रित / मुरमाड (Sandy/Murum)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="gwDepth" data-i18n="gw_depth">विहीर / बोअरवेल पाण्याची पातळी (Groundwater Depth) *</label>
+            <select id="gwDepth" class="form-control" required>
+              <option value="SHALLOW">उथळ पाणीपातळी (< ५ मीटर / < १५ फूट)</option>
+              <option value="MEDIUM" selected>मध्यम पाणीपातळी (५ ते १५ मीटर / १५ ते ५० फूट)</option>
+              <option value="DEEP">खोल पाणीपातळी (> १५ मीटर / > ५० फूट)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="purpose" data-i18n="water_purpose">मुख्य उद्देश (Primary Purpose) *</label>
+            <select id="purpose" class="form-control" required>
+              <option value="IRRIGATION" selected>शेती सिंचन व संरक्षित पाणी (Crop Irrigation)</option>
+              <option value="RECHARGE">विहीर / भूजल पुनर्भरण (Aquifer Recharge)</option>
+              <option value="DOMESTIC">घरगुती व जनावरांचे पाणी (Domestic & Livestock)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <span data-i18n="btn_find_feasibility">🔍 योग्य संरचना शोधा (Recommend Structure)</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Recommendation Result Card -->
+      <div>
+        <div id="resultCard" class="card" style="display: none; border-top: 6px solid var(--color-primary);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div>
+              <span class="badge" style="background: #e8f5e9; color: #2e7d32; font-weight: bold; padding: 0.25rem 0.6rem; border-radius: 4px;" data-i18n="recommended_structure_badge">सर्वोत्तम शिफारस</span>
+              <h2 id="resStructureName" style="margin: 0.5rem 0 0.25rem 0; color: var(--color-primary); font-size: 1.4rem;">शेततळे (Farm Pond)</h2>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.8rem; color: #666;" data-i18n="est_capacity">अंदाजे क्षमता</span>
+              <div id="resCapacity" style="font-size: 1.25rem; font-weight: bold; color: var(--color-accent);">५,००,००० लिटर</div>
+            </div>
+          </div>
+
+          <!-- Rationale -->
+          <div style="background: #fbfbfb; border: 1px solid #eee; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+            <strong style="color: #333; font-size: 0.9rem;" data-i18n="why_this_label">💡 ही संरचना का निवडावी? (Technical Reason)</strong>
+            <p id="resReason" style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #555; line-height: 1.5;"></p>
+          </div>
+
+          <!-- Options comparison: Low-cost Manual vs Mechanised -->
+          <div style="margin-bottom: 1rem;">
+            <div style="border-left: 4px solid #2e7d32; padding: 0.75rem 1rem; background: #f1f8e9; border-radius: 4px; margin-bottom: 0.75rem;">
+              <strong style="color: #2e7d32; display: flex; align-items: center; gap: 0.4rem;">
+                <span>🛠️</span> <span data-i18n="low_cost_option">कमी खर्चाचा पर्याय (Low-Cost / Manual)</span>
+              </strong>
+              <p id="resLowCost" style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #333;"></p>
+            </div>
+
+            <div style="border-left: 4px solid var(--color-primary); padding: 0.75rem 1rem; background: #e0f2f1; border-radius: 4px;">
+              <strong style="color: var(--color-primary); display: flex; align-items: center; gap: 0.4rem;">
+                <span>🚜</span> <span data-i18n="mechanised_option">यांत्रिकी / पक्का पर्याय (Mechanised / Advanced)</span>
+              </strong>
+              <p id="resMechanised" style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #333;"></p>
+            </div>
+          </div>
+
+          <!-- Cost and Subsidy Info -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #eee; flex-wrap: gap;">
+            <div>
+              <span style="font-size: 0.8rem; color: #666;" data-i18n="approx_cost_label">अंदाजे खर्च:</span>
+              <strong id="resCost" style="color: #e67e22; font-size: 1rem; margin-left: 0.3rem;">₹२०,००० - ₹४५,०००</strong>
+            </div>
+            <a href="learning.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.3rem 0.8rem;" data-i18n="view_guide_btn">📖 मार्गदर्शन मार्गदर्शक पहा</a>
+          </div>
+        </div>
+
+        <!-- Initial Placeholder Card -->
+        <div id="placeholderCard" class="card" style="text-align: center; padding: 3rem 1rem; color: #888;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">💧</div>
+          <h3 style="margin: 0; color: #555;" data-i18n="structure_prompt_heading">आपल्या जमिनीचे तपशील निवडा</h3>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;" data-i18n="structure_prompt_body">डाव्या बाजूचा फॉर्म भरून "योग्य संरचना शोधा" बटणावर क्लिक करा.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { initNavbar } from '/js/navbar.js';
+
+    window.convertUnitHint = function() {
+      const val = parseFloat(document.getElementById('catchmentArea').value) || 0;
+      const unit = document.getElementById('areaUnit').value;
+      let sqm = val;
+      if (unit === 'guntha') sqm = val * 101.17;
+      else if (unit === 'acre') sqm = val * 4046.86;
+      else if (unit === 'hectare') sqm = val * 10000;
+      document.getElementById('convertedAreaHint').innerText = `= ${Math.round(sqm).toLocaleString('mr-IN')} चौ. मीटर (m²)`;
+    };
+
+    document.getElementById('catchmentArea').addEventListener('input', window.convertUnitHint);
+
+    window.autoFillRainfall = async function() {
+      const dist = document.getElementById('districtSelect').value;
+      try {
+        const res = await api.get(`/rainfall/district-normal?district=${encodeURIComponent(dist)}`, false);
+        // auto-adjust defaults if necessary
+      } catch (e) {}
+    };
+
+    function calculateFeasibility(e) {
+      e.preventDefault();
+      const district = document.getElementById('districtSelect').value;
+      const val = parseFloat(document.getElementById('catchmentArea').value) || 1;
+      const unit = document.getElementById('areaUnit').value;
+      let areaSqm = val;
+      if (unit === 'guntha') areaSqm = val * 101.17;
+      else if (unit === 'acre') areaSqm = val * 4046.86;
+      else if (unit === 'hectare') areaSqm = val * 10000;
+
+      const slope = document.getElementById('landSlope').value;
+      const soil = document.getElementById('soilType').value;
+      const gw = document.getElementById('gwDepth').value;
+      const purpose = document.getElementById('purpose').value;
+
+      let name = "शेततळे (Farm Pond / Shet-Tale)";
+      let cap = Math.min(Math.round(areaSqm * 250), 1000000);
+      let reason = "मध्यम उतारावर काळ्या मातीच्या भागात पावसाचे वाहून जाणारे पाणी अडवण्यासाठी शेततळे अत्यंत प्रभावी आहे. यामुळे संरक्षित सिंचन मिळते.";
+      let lowCost = "श्रमदानाने किंवा स्थानिक मजुरांच्या सहाय्याने खोदाई; स्थानिक चिकणमातीचा गिलावा करून पाझर रोखणे.";
+      let mech = "जेसीबी द्वारे अचूक उतार खोदाई आणि ५०० मायक्रॉन बीआयएस प्रमाणित प्लास्टिक अस्तर (HDPE Liner).";
+      let cost = "₹३५,००० ते ₹८०,००० (मागेल त्याला शेततळे योजनेतून अनुदान उपलब्ध)";
+
+      if (purpose === 'RECHARGE' || gw === 'DEEP') {
+        name = "विहीर / बोअरवेल पुनर्भरण शाफ्ट (Recharge Shaft)";
+        cap = 150000;
+        reason = "खोल भूजल पातळी असलेल्या भागात वाहणारे पाणी थेट जलधरेमध्ये (Aquifer) सोडण्यासाठी गाळणीयुक्त पुनर्भरण शाफ्ट आवश्यक आहे.";
+        lowCost = "स्थानिक वाळू, बारीक खडी आणि कोळसा वापरून ३-स्तरीय नैसर्गिक फिल्टर तयार करणे.";
+        mech = "प्री-कास्ट आरसीसी रिंग्ज, स्वयंचलित रिव्हर्स-फ्लश व्हॉल्व्ह आणि केसिंग पाईप परफोरेशन.";
+        cost = "₹८,००० ते ₹२२,०००";
+      } else if (slope === 'STEEP') {
+        name = "सलग समपातळी चर (Contour Trenches & Stone Bunding)";
+        cap = Math.round(areaSqm * 80);
+        reason = "डोंगरउतारावरून वेगाने वाहणारे पाणी अडवून मातीची धूप थांबवण्यासाठी आणि पाणी जमिनीत मुरवण्यासाठी समपातळी चर सर्वोत्तम आहेत.";
+        lowCost = "पाणी फाउंडेशनच्या धर्तीवर ग्रामस्थांचे श्रमदान; स्थानिक दगड-गोट्यांचे बांध (Loose Boulder Structures).";
+        mech = "ट्रॅक्टर रिपरद्वारे समपातळीवर चर खोदणे आणि खस गवताची (Vetiver) लागवड.";
+        cost = "₹५,००० ते ₹१५,००० प्रति एकर";
+      } else if (areaSqm < 500) {
+        name = "छत जलसंधारण व भूमिगत टाकी (Rooftop RWH & Jalkund)";
+        cap = Math.round(areaSqm * 400);
+        reason = "कमी क्षेत्रफळ किंवा घराच्या छतासाठी शुद्ध पिण्याचे व घरगुती पाणी साठवण्यासाठी भूमिगत किंवा पीव्हीसी टाकी योग्य आहे.";
+        lowCost = "स्थानिक जलकुंड (Jalkund) खड्डा खणून सिलपॉलिन ताडपत्रीचे अस्तर देणे.";
+        mech = "पीव्हीसी पाईप्स, फर्स्ट-फ्लश डिव्हर्टर आणि ५,००० लिटर तिहेरी थर प्लास्टिक टाकी.";
+        cost = "₹१२,००० ते ₹२८,०००";
+      }
+
+      document.getElementById('resStructureName').innerText = name;
+      document.getElementById('resCapacity').innerText = `${cap.toLocaleString('mr-IN')} लिटर`;
+      document.getElementById('resReason').innerText = reason;
+      document.getElementById('resLowCost').innerText = lowCost;
+      document.getElementById('resMechanised').innerText = mech;
+      document.getElementById('resCost').innerText = cost;
+
+      document.getElementById('placeholderCard').style.display = 'none';
+      document.getElementById('resultCard').style.display = 'block';
+      api.showToast('योग्य संरचनेचे विश्लेषण पूर्ण!', 'success');
+    };
+    window.calculateFeasibility = calculateFeasibility;
+  </script>
+</body>
+</html>

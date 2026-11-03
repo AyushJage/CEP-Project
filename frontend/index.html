@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="app.title">जलसाथी (JalSathi) - पाणी साठवण व जलसंरक्षण</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="margin-top: 1.5rem;">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 data-i18n="hero.title">पावसाचा प्रत्येक थेंब शेतात जिरवा व समृद्धी आणा</h1>
+            <p data-i18n="hero.desc">
+                महाराष्ट्रातील लहान व अल्पभूधारक शेतकऱ्यांसाठी सोपे, विनामूल्य डिजिटल व्यासपीठ. पावसाची नोंद, साठवण क्षमता अंदाज, माती सुपीकता आणि कमी खर्चाच्या जलसंधारण उपाययोजना.
+            </p>
+            <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                <a href="/register.html" class="btn btn-primary" data-i18n="hero.cta.start">आता सुरुवात करा (विनामूल्य)</a>
+                <a href="/calculator.html" class="btn btn-secondary" data-i18n="hero.cta.calc">पाणी साठवण क्षमता मोजा</a>
+            </div>
+
+            <!-- Survey Evidence Strip -->
+            <div class="card" style="max-width:800px;margin:2rem auto 0 auto;background:rgba(255,255,255,0.9);">
+                <h3 data-i18n="survey.stat.title" style="color:var(--color-primary-dark);">आमच्या शेतकरी सर्वेक्षणातील वास्तव</h3>
+                <div style="font-size:1.4rem;font-weight:800;color:var(--color-danger);margin:0.5rem 0;" data-i18n="survey.stat.67">
+                    ६७% शेतकऱ्यांकडे सध्या कोणतीही पावसाचे पाणी साठवण्याची रचना नाही
+                </div>
+                <p style="font-size:0.95rem;color:var(--color-text-muted);margin:0;" data-i18n="survey.stat.reason">
+                    प्रमुख अडथळे: हवामानातील अनिश्चितता, तांत्रिक माहितीचा अभाव आणि सुरुवातीचा जास्त खर्च.
+                </p>
+            </div>
+
+            <!-- SDG Strip -->
+            <div class="sdg-strip">
+                <div class="sdg-card sdg-6">
+                    <span>💧</span>
+                    <span>SDG 6: Clean Water &amp; Sanitation</span>
+                </div>
+                <div class="sdg-card sdg-13">
+                    <span>🌱</span>
+                    <span>SDG 13: Climate Action</span>
+                </div>
+                <div class="sdg-card sdg-15">
+                    <span>🌾</span>
+                    <span>SDG 15: Life on Land</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features Grid -->
+        <section style="margin-bottom: 3rem;">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2 data-i18n="home.features_title">मुख्य वैशिष्ट्ये (Features)</h2>
+                <p style="color:var(--color-text-muted);" data-i18n="home.features_subtitle">शेतकऱ्यांच्या गरजांनुसार विकसित केलेली व्यावहारिक डिजिटल साधने</p>
+            </div>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">📐</div>
+                    <h3 data-i18n="nav.calculator">पाऊस व साठवण कॅल्क्युलेटर</h3>
+                    <p data-i18n="home.feat_calc_desc">आपल्या शेतात किंवा छतावर किती लाख लिटर पाणी जमा होऊ शकते याची अचूक गणना करा (१ मि.मी. पाऊस x १ चौ.मी. = १ लिटर).</p>
+                    <a href="/calculator.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_calc_btn">कॅल्क्युलेटर उघडा &rarr;</a>
+                </div>
+
+                <div class="card">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🚰</div>
+                    <h3 data-i18n="nav.tanks">पाणी साठा व टाकी ट्रॅकर</h3>
+                    <p data-i18n="home.feat_tank_desc">शेततळे किंवा पाण्याच्या टाकीतील रोजची आवक-जावक नोंदवा. पाणी पातळी २०% च्या खाली गेल्यास स्वयंचलित अलर्ट मिळवा.</p>
+                    <a href="/tank.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_tank_btn">टाकी ट्रॅकर &rarr;</a>
+                </div>
+
+                <div class="card">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🧪</div>
+                    <h3 data-i18n="nav.fertility">मातीची सुपीकता तपासणी</h3>
+                    <p data-i18n="home.feat_fert_desc">मातीचे नत्र, स्फुरद, पालाश व सामू (pH) तपासून १०० पैकी सुपीकता गुण मिळवा आणि सेंद्रिय उपाययोजनांची माहिती घ्या.</p>
+                    <a href="/fertility.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_fert_btn">सुपीकता तपासा &rarr;</a>
+                </div>
+
+                <div class="card">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🤖</div>
+                    <h3 data-i18n="nav.ai">एआय हंगामी पाऊस व पिक सल्ला</h3>
+                    <p data-i18n="home.feat_ai_desc">११५ वर्षांच्या ऐतिहासिक पावसाच्या नोंदींवर आधारित आपल्या जिल्ह्यासाठी हंगामी पाऊस अंदाज व पाणी नियोजनाचा ताळेबंद.</p>
+                    <a href="/ai-assist.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_ai_btn">एआय सहाय्यक &rarr;</a>
+                </div>
+
+                <div class="card">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">💰</div>
+                    <h3 data-i18n="nav.cost">टँकर खर्च बचत कॅल्क्युलेटर</h3>
+                    <p data-i18n="home.feat_cost_desc">पाणी साठवणुकीमुळे दरवर्षी विकतच्या टँकरवरील किती हजार रुपयांची बचत होते आणि रचनेचा खर्च किती दिवसांत वसूल होतो ते पहा.</p>
+                    <a href="/cost.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_cost_btn">खर्च बचत मोजा &rarr;</a>
+                </div>
+
+                <div class="card">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🗺️</div>
+                    <h3 data-i18n="nav.groundwater">महाराष्ट्र भूजल नकाशा</h3>
+                    <p data-i18n="home.feat_gw_desc">केंद्रीय व राज्य भूजल मंडळाच्या (WRIS) निरीक्षण विहिरींचा थेट नकाशा व आपल्या तालुक्यातील पाण्याची पातळी तपासा.</p>
+                    <a href="/groundwater.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_gw_btn">नकाशा पहा &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Government Schemes Informational Card -->
+        <section class="card" style="background:var(--color-surface-alt);border:2px dashed var(--color-primary);margin-bottom:3rem;">
+            <div class="card-header">
+                <h3 data-i18n="home.schemes_title">🏛️ महाराष्ट्र राज्य शासकीय योजना माहिती (Government Schemes)</h3>
+                <span class="badge badge-info" data-i18n="home.schemes_badge">माहिती मार्गदर्शक</span>
+            </div>
+            <p data-i18n-html="home.schemes_desc">
+                पाणी साठवण व शेततळ्यांसाठी शासनाकडून मिळणाऱ्या प्रमुख योजनांची माहिती खालीलप्रमाणे आहे.
+                <em>(टीप: वर्तमान पात्रता व अर्जासाठी आपल्या स्थानिक तालुका कृषी अधिकारी / ग्रामपंचायत कार्यालयाशी संपर्क साधावा).</em>
+            </p>
+            <ul style="padding-left:1.5rem;margin-bottom:1rem;line-height:1.8;">
+                <li data-i18n-html="home.scheme_1"><strong>मागेल त्याला शेततळे योजना (Magel Tyala Shettale):</strong> वैयक्तिक शेततळे खोदकाम व प्लास्टिक अस्तरीकरणासाठी थेट बँक खात्यात अनुदान.</li>
+                <li data-i18n-html="home.scheme_2"><strong>जलयुक्त शिवार अभियान २.० (Jalyukt Shivar):</strong> गावातील नाला खोलीकरण, सिमेंट बंधारे दुरुस्ती व जलसंधारण कामे.</li>
+                <li data-i18n-html="home.scheme_3"><strong>प्रधानमंत्री कृषी सिंचन योजना (PMKSY):</strong> ठिबक सिंचन (Drip) व तुषार सिंचनासाठी ५५% ते ८०% पर्यंत शासकीय अर्थसाहाय्य.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer></footer>
+
+    <script type="module" src="/js/navbar.js"></script>
+</body>
+</html>

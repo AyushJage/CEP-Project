@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>पाऊस नोंद | Rainwater Harvesting Monitor</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <main class="page-container" style="max-width: 1000px; margin: 2rem auto; padding: 0 1rem 5rem 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="margin: 0; color: var(--color-primary);" data-i18n="rainfall_title">पावसाची नोंद (Rainfall Log)</h1>
+        <p style="margin: 0.25rem 0 0 0; color: #666;" data-i18n="rainfall_subtitle">दररोज पडणाऱ्या पावसाची नोंद ठेवा आणि जिल्ह्याच्या सरासरीशी तुलना करा</p>
+      </div>
+      <button class="btn btn-outline" onclick="window.location.href='dashboard.html'" data-i18n="back_to_dashboard">← मुख्य डॅशबोर्ड</button>
+    </div>
+
+    <!-- Quick Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+      <div class="card" style="border-left: 5px solid var(--color-primary); padding: 1rem;">
+        <span style="font-size: 0.85rem; color: #666;" data-i18n="total_rainfall_recorded">एकूण नोंदवलेला पाऊस (चालू वर्ष)</span>
+        <div style="font-size: 1.8rem; font-weight: bold; color: var(--color-primary); margin-top: 0.25rem;" id="statTotalMm">0 mm</div>
+      </div>
+      <div class="card" style="border-left: 5px solid var(--color-accent); padding: 1rem;">
+        <span style="font-size: 0.85rem; color: #666;" data-i18n="district_normal_stat">जिल्ह्याची वार्षिक सरासरी</span>
+        <div style="font-size: 1.8rem; font-weight: bold; color: var(--color-accent); margin-top: 0.25rem;" id="statDistrictNormal">-- mm</div>
+      </div>
+      <div class="card" style="border-left: 5px solid #e67e22; padding: 1rem;">
+        <span style="font-size: 0.85rem; color: #666;" data-i18n="highest_rain_day">एका दिवसात सर्वाधिक पाऊस</span>
+        <div style="font-size: 1.8rem; font-weight: bold; color: #e67e22; margin-top: 0.25rem;" id="statMaxDay">0 mm</div>
+      </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="responsive-grid">
+      <!-- Left: Form to record rainfall -->
+      <div class="card">
+        <h2 style="font-size: 1.25rem; margin-top: 0; color: var(--color-primary); display: flex; align-items: center; gap: 0.5rem;">
+          <span>🌧️</span> <span data-i18n="add_rainfall_record">नवीन पावसाची नोंद करा</span>
+        </h2>
+        <form id="rainfallForm" onsubmit="handleSaveRainfall(event)">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="recordDate" data-i18n="record_date">तारीख (Date) *</label>
+            <input type="date" id="recordDate" class="form-control" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="rainfallMm" data-i18n="rainfall_amount_mm">पाऊस (मिलीमीटर / mm) *</label>
+            <input type="number" id="rainfallMm" class="form-control" step="0.1" min="0" max="1500" placeholder="उदा. 45.5" required>
+            <small style="color: #666;" data-i18n="rainfall_hint">१ मिमी पाऊस = १ चौरस मीटरवर १ लिटर पाणी</small>
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="rainNote" data-i18n="rain_note">टीप / निरीक्षण (पर्यायी)</label>
+            <input type="text" id="rainNote" class="form-control" placeholder="उदा. मुसळधार पाऊस, वादळी वारे">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;" id="btnSaveRain">
+            <span data-i18n="save_rainfall_record">💾 नोंद जतन करा</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right: Comparison Chart -->
+      <div class="card">
+        <h2 style="font-size: 1.25rem; margin-top: 0; color: var(--color-primary); display: flex; align-items: center; gap: 0.5rem;">
+          <span>📊</span> <span data-i18n="monthly_comparison_chart">मासिक पाऊस vs ऐतिहासिक सरासरी</span>
+        </h2>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;" data-i18n="chart_subtext">गेल्या १२ महिन्यांचा प्रत्यक्ष पाऊस आणि हवामान विभागाची ३० वर्षांची सरासरी</p>
+        <div style="position: relative; height: 260px; width: 100%;">
+          <canvas id="rainfallChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Past Records Table -->
+    <div class="card" style="margin-top: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.25rem; margin: 0; color: var(--color-primary);" data-i18n="past_rainfall_logs">मागील पावसाच्या नोंदी</h2>
+        <span id="recordCount" style="font-size: 0.9rem; color: #666;">० नोंदी</span>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f4f7f6; text-align: left; border-bottom: 2px solid #ddd;">
+              <th style="padding: 0.75rem;" data-i18n="col_date">तारीख</th>
+              <th style="padding: 0.75rem;" data-i18n="col_rainfall_mm">पाऊस (mm)</th>
+              <th style="padding: 0.75rem;" data-i18n="col_note">टीप</th>
+              <th style="padding: 0.75rem; text-align: right;" data-i18n="col_actions">कृती</th>
+            </tr>
+          </thead>
+          <tbody id="rainfallTableBody">
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 2rem; color: #999;" data-i18n="loading_records">नोंदी लोड होत आहेत...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { api } from '/js/api.js';
+    import { initNavbar } from '/js/navbar.js';
+
+    let myChart = null;
+    let userDistrict = 'Pune';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const dateEl = document.getElementById('recordDate');
+      if (dateEl) dateEl.valueAsDate = new Date();
+      await loadProfileAndRecords();
+
+      const form = document.querySelector('form');
+      if (form) form.addEventListener('submit', handleSaveRainfall);
+    });
+
+    async function loadProfileAndRecords() {
+      const token = api.getToken();
+      if (token) {
+        try {
+          const user = await api.getMe();
+          if (user && user.district) {
+            userDistrict = user.district;
+          }
+        } catch (e) {
+          console.warn('Using default district', e);
+        }
+        await loadRecords();
+      } else {
+        const tbody = document.getElementById('rainfallTableBody');
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#888;">वैयक्तिक पावसाची नोंद जतन करण्यासाठी कृपया <a href="/login.html">लॉगिन करा</a>.</td></tr>`;
+        }
+      }
+
+      await loadDistrictNormalAndChart();
+    }
+
+    async function loadRecords() {
+      try {
+        const records = await api.get('/rainfall');
+        renderTable(records);
+        calculateStats(records);
+      } catch (err) {
+        console.warn('Could not load records:', err);
+      }
+    }
+
+    function calculateStats(records) {
+      if (!records || records.length === 0) {
+        document.getElementById('statTotalMm').innerText = '0 mm';
+        document.getElementById('statMaxDay').innerText = '0 mm';
+        return;
+      }
+
+      let total = 0;
+      let maxDay = 0;
+      const currentYear = new Date().getFullYear();
+
+      records.forEach(r => {
+        const rYear = new Date(r.recordDate).getFullYear();
+        if (rYear === currentYear) {
+          total += r.rainfallMm;
+        }
+        if (r.rainfallMm > maxDay) {
+          maxDay = r.rainfallMm;
+        }
+      });
+
+      document.getElementById('statTotalMm').innerText = `${total.toFixed(1)} mm`;
+      document.getElementById('statMaxDay').innerText = `${maxDay.toFixed(1)} mm`;
+    }
+
+    function renderTable(records) {
+      const tbody = document.getElementById('rainfallTableBody');
+      const countEl = document.getElementById('recordCount');
+      if (!records || records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #888;">अद्याप कोणतीही नोंद नाही.</td></tr>`;
+        countEl.innerText = '० नोंदी';
+        return;
+      }
+
+      countEl.innerText = `${records.length} नोंदी`;
+      tbody.innerHTML = records.map(r => `
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 0.75rem; font-weight: 500;">${r.recordDate}</td>
+          <td style="padding: 0.75rem; color: var(--color-primary); font-weight: bold;">${r.rainfallMm} mm</td>
+          <td style="padding: 0.75rem; color: #555;">${r.note || '-'}</td>
+          <td style="padding: 0.75rem; text-align: right;">
+            <button class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.8rem; color: #d32f2f; border-color: #d32f2f;" onclick="handleDelete(${r.id})">🗑️ हटवा</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function handleSaveRainfall(e) {
+      e.preventDefault();
+      const date = document.getElementById('recordDate').value;
+      const mm = parseFloat(document.getElementById('rainfallMm').value);
+      const note = document.getElementById('rainNote').value;
+
+      try {
+        await api.post('/rainfall', {
+          recordDate: date,
+          rainfallMm: mm,
+          note: note
+        });
+        api.showToast('पावसाची नोंद यशस्वीरीत्या जतन झाली!', 'success');
+        document.getElementById('rainfallMm').value = '';
+        document.getElementById('rainNote').value = '';
+        await loadRecords();
+        await loadDistrictNormalAndChart();
+      } catch (err) {
+        api.showToast(err.message || 'नोंद जतन अयशस्वी', 'error');
+      }
+    }
+
+    window.handleDelete = async function(id) {
+      if (!confirm('आपण ही नोंद हटवू इच्छिता?')) return;
+      try {
+        await api.delete(`/rainfall/${id}`);
+        api.showToast('नोंद हटवली!', 'info');
+        await loadRecords();
+        await loadDistrictNormalAndChart();
+      } catch (err) {
+        api.showToast(err.message || 'नोंद हटवणे अयशस्वी', 'error');
+      }
+    };
+
+    async function loadDistrictNormalAndChart() {
+      let normalAnnual = 750;
+      let normals = [5, 4, 8, 12, 35, 180, 240, 190, 120, 45, 15, 8];
+      try {
+        const res = await api.get(`/rainfall/district-normal?district=${encodeURIComponent(userDistrict)}`, false);
+        if (res) {
+          normalAnnual = res.annualMm || 750;
+          document.getElementById('statDistrictNormal').innerText = `${normalAnnual.toFixed(0)} mm`;
+          normals = [res.janMm, res.febMm, res.marMm, res.aprMm, res.mayMm, res.junMm, res.julMm, res.augMm, res.sepMm, res.octMm, res.novMm, res.decMm];
+        }
+      } catch (e) {
+        console.warn('Could not fetch district normals', e);
+      }
+
+      // Fetch monthly user logged rainfall
+      let userMonthly = new Array(12).fill(0);
+      try {
+        if (api.getToken()) {
+          const records = await api.get('/rainfall');
+          const currYear = new Date().getFullYear();
+          records.forEach(r => {
+            const d = new Date(r.recordDate);
+            if (d.getFullYear() === currYear) {
+              userMonthly[d.getMonth()] += r.rainfallMm;
+            }
+          });
+        }
+      } catch (e) {}
+
+      renderChart(normals, userMonthly);
+    }
+
+    function renderChart(normals, actuals) {
+      const ctx = document.getElementById('rainfallChart').getContext('2d');
+      const labels = ['जाने', 'फेब्रु', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टें', 'ऑक्टो', 'नोव्हे', 'डिसें'];
+
+      if (myChart) myChart.destroy();
+
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '३० वर्षांची सरासरी (Normal mm)',
+              data: normals,
+              backgroundColor: 'rgba(200, 200, 200, 0.4)',
+              borderColor: '#999',
+              borderWidth: 1
+            },
+            {
+              label: 'प्रत्यक्ष नोंदवलेला पाऊस (Logged mm)',
+              data: actuals,
+              backgroundColor: 'rgba(14, 154, 167, 0.8)',
+              borderColor: '#0E9AA7',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'मिलीमीटर (mm)' }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

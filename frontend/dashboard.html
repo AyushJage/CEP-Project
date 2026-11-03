@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav.dashboard">डॅशबोर्ड - जलसाथी (JalSathi)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="margin-top: 1.5rem; margin-bottom: 3.5rem;">
+        <!-- Farmer Welcome & Profile Banner -->
+        <div class="farmer-banner-card">
+            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                <div class="farmer-avatar">🌾</div>
+                <div>
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem;">
+                        <span data-i18n="dash.welcome_prefix">नमस्कार,</span> <span id="farmer-name" style="color: var(--color-primary);">शेतकरी बंधू</span>!
+                    </h2>
+                    <p style="color: var(--color-text-muted); margin: 0.35rem 0 0 0; font-size: 0.92rem;">
+                        <span data-i18n="dash.location_label">स्थान:</span> <strong id="farmer-location">-</strong> | 
+                        <span data-i18n="dash.phone_label">मोबाईल:</span> <strong id="farmer-phone">-</strong>
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                <a href="/calculator.html" class="btn btn-primary btn-sm">
+                    <span>📐</span> <span data-i18n="dash.btn_measure">पाणी मोजा</span>
+                </a>
+                <a href="/tank.html" class="btn btn-accent btn-sm">
+                    <span>🚰</span> <span data-i18n="dash.btn_tank">टाकी ट्रॅकर</span>
+                </a>
+                <a href="/fertility.html" class="btn btn-secondary btn-sm">
+                    <span>🧪</span> <span data-i18n="dash.btn_fertility">माती सुपीकता</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 4 Cohesive Stat Tiles -->
+        <div class="grid grid-4" style="margin-bottom: 1.5rem;">
+            <div class="stat-tile">
+                <div class="stat-label" data-i18n="dash.stat_land_label">एकूण शेतजमीन</div>
+                <div class="stat-value" id="stat-land">0 गुंठे</div>
+                <div class="stat-sub" data-i18n="dash.stat_land_sub">नोंदवलेले शेतजमीन क्षेत्र</div>
+            </div>
+            <div class="stat-tile accent-teal">
+                <div class="stat-label" data-i18n="dash.stat_cap_label">पाणी साठवण क्षमता</div>
+                <div class="stat-value" id="stat-capacity">0 L</div>
+                <div class="stat-sub" data-i18n="dash.stat_cap_sub">टाकी व शेततळे क्षमता</div>
+            </div>
+            <div class="stat-tile accent-green">
+                <div class="stat-label" data-i18n="dash.stat_water_label">उपलब्ध पाणी साठा</div>
+                <div class="stat-value" id="stat-level">0 L</div>
+                <div class="stat-sub" id="stat-pct">०% भरलेले</div>
+            </div>
+            <div class="stat-tile accent-amber">
+                <div class="stat-label" data-i18n="dash.stat_fert_label">माती सुपीकता गुण</div>
+                <div class="stat-value" id="stat-fertility">- / 100</div>
+                <div class="stat-sub" id="stat-band" data-i18n="dash.stat_fert_sub">तपासणी बाकी</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Split: Gauge & Rainfall Chart -->
+        <div class="grid grid-2">
+            <!-- Storage Tank Visual Gauge Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="display:flex;align-items:center;gap:0.4rem;">
+                        <span>💧</span> <span data-i18n="dash.gauge_title">मुख्य पाणी साठा पातळी</span>
+                    </h3>
+                    <a href="/tank.html" class="btn btn-secondary btn-sm" data-i18n="dash.gauge_details">तपशील पहा &rarr;</a>
+                </div>
+                <div class="gauge-container">
+                    <div class="water-tank-gauge">
+                        <div class="water-fill green" id="gauge-fill" style="height: 0%;"></div>
+                        <div class="gauge-overlay" id="gauge-text">0%</div>
+                    </div>
+                    <div style="margin-top: 1.25rem; text-align: center;">
+                        <h4 id="gauge-tank-name" data-i18n="dash.gauge_tank_name" style="font-size:1.1rem;margin-bottom:0.25rem;">शेततळे / मुख्य टाकी</h4>
+                        <p style="font-size:0.92rem; color:var(--color-text-muted); margin:0;">
+                            <span data-i18n="dash.gauge_available">उपलब्ध:</span> <strong id="gauge-available" style="color:var(--color-primary);">0</strong> / <span id="gauge-total">0</span> <span data-i18n="dash.gauge_litres">लिटर</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rainfall History & Normal Comparison Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="display:flex;align-items:center;gap:0.4rem;">
+                        <span>🌧️</span> <span data-i18n="dash.rain_title">पाऊस नोंद व वार्षिक कल</span>
+                    </h3>
+                    <button class="btn btn-secondary btn-sm" id="btn-quick-rain" data-i18n="dash.btn_quick_rain">+ पाऊस नोंदवा</button>
+                </div>
+                <div style="position: relative; height: 260px;">
+                    <canvas id="rainfallChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Rainfall Entry Modal / Form (Inline collapsible) -->
+        <div id="quick-rain-box" class="card" style="display:none; border: 1.5px solid var(--color-primary); background: var(--color-primary-subtle); margin-top: 1.5rem;">
+            <div class="card-header" style="border-bottom-color: var(--color-primary-border);">
+                <h4 style="display:flex;align-items:center;gap:0.4rem;color:var(--color-primary-dark);margin:0;">
+                    <span>🌧️</span> <span data-i18n="dash.quick_rain_title">नवीन पावसाची नोंद करा</span>
+                </h4>
+                <button class="btn btn-secondary btn-sm" id="btn-close-rain" data-i18n="dash.quick_rain_close">✕ बंद करा</button>
+            </div>
+            <form id="rain-entry-form" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
+                <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+                    <label data-i18n="dash.quick_rain_date">तारीख</label>
+                    <input type="date" id="rain-date" required>
+                </div>
+                <div class="form-group" style="flex:1;min-width:160px;margin-bottom:0;">
+                    <label data-i18n="dash.quick_rain_mm">पाऊस प्रमाण (मि.मी.)</label>
+                    <input type="number" step="0.1" id="rain-mm" placeholder="उदा. 35.5" required min="0" max="1500">
+                </div>
+                <div class="form-group" style="flex:2;min-width:220px;margin-bottom:0;">
+                    <label data-i18n="dash.quick_rain_note">टीप</label>
+                    <input type="text" id="rain-note" placeholder="उदा. जोरदार पाऊस, नाला भरून वाहिला">
+                </div>
+                <button type="submit" class="btn btn-primary" style="min-height:46px;" data-i18n="dash.quick_rain_save">जतन करा</button>
+            </form>
+        </div>
+
+        <!-- Land Plots List Table -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3 style="display:flex;align-items:center;gap:0.4rem;">
+                    <span>🌾</span> <span data-i18n="dash.plots_title">माझी शेतजमीन व भूखंड</span>
+                </h3>
+                <button class="btn btn-primary btn-sm" id="btn-add-plot" data-i18n="dash.btn_add_plot">+ नवीन शेतजमीन जोडा</button>
+            </div>
+
+            <div id="plot-form-box" style="display:none;margin-bottom:1.5rem;padding:1.25rem;background:var(--color-surface-alt);border-radius:var(--radius-md);border:1px solid var(--color-border);">
+                <h4 data-i18n="dash.plot_form_title" style="margin-bottom:0.75rem;">नवीन भूखंड नोंदणी</h4>
+                <form id="land-form" class="grid grid-3" style="margin-top:0.75rem;">
+                    <div class="form-group">
+                        <label data-i18n="dash.plot_name">भूखंड / शेताचे नाव</label>
+                        <input type="text" id="plot-name" placeholder="उदा. ओढ्याकाठचे रान" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="dash.plot_area">क्षेत्रफळ (चौ.मी.) [१ एकर = ४०४६ चौ.मी.]</label>
+                        <input type="number" id="plot-area" placeholder="उदा. 4046.86" step="0.1" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="dash.plot_surface">जमिनीचा प्रकार</label>
+                        <select id="plot-surface" required>
+                            <option value="Farmland/cropped" data-i18n="dash.plot_surface_farmland">पीक शेतजमीन (0.40)</option>
+                            <option value="Roof/concrete" data-i18n="dash.plot_surface_roof">घर किंवा शेडचे छत (0.85)</option>
+                            <option value="Compacted soil" data-i18n="dash.plot_surface_soil">अंगण / मातीची जमीन (0.60)</option>
+                            <option value="Grassland" data-i18n="dash.plot_surface_grass">कुरण / गवत (0.30)</option>
+                        </select>
+                    </div>
+                    <div style="grid-column: 1 / -1; display:flex; gap:0.65rem;">
+                        <button type="submit" class="btn btn-primary btn-sm" data-i18n="dash.plot_save">जतन करा</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-plot" data-i18n="dash.plot_cancel">रद्द करा</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="dash.plot_th_name">भूखंड नाव</th>
+                            <th data-i18n="dash.plot_th_sqm">क्षेत्रफळ (चौ.मी.)</th>
+                            <th data-i18n="dash.plot_th_gunthe">गुंठे / एकर</th>
+                            <th data-i18n="dash.plot_th_surface">जमीन प्रकार</th>
+                            <th data-i18n="dash.plot_th_action">क्रिया</th>
+                        </tr>
+                    </thead>
+                    <tbody id="land-tbody">
+                        <tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:1.5rem;">लोड होत आहे...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Alerts Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 style="display:flex;align-items:center;gap:0.4rem;">
+                    <span>🔔</span> <span data-i18n="dash.alerts_title">सूचना व आठवणी</span>
+                </h3>
+                <a href="/alerts.html" class="btn btn-secondary btn-sm" data-i18n="dash.alerts_all">सर्व सूचना पहा &rarr;</a>
+            </div>
+            <div id="alerts-container">
+                <p style="color:var(--color-text-muted);" data-i18n="dash.alerts_empty">कोणत्याही प्रलंबित सूचना नाहीत.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { t, getCurrentLanguage } from '/js/i18n.js';
+
+        let rainfallChart = null;
+
+        async function initDashboard() {
+            try {
+                const user = await api.get('/auth/me');
+                if (user) {
+                    document.getElementById('farmer-name').textContent = user.name || t('dash.farmer_default', 'शेतकरी बंधू');
+                    document.getElementById('farmer-phone').textContent = user.phone || '-';
+                    const locParts = [user.village, user.taluka, user.district].filter(Boolean);
+                    document.getElementById('farmer-location').textContent = locParts.length ? locParts.join(', ') : '-';
+                }
+
+                // Set default date for quick rain entry
+                document.getElementById('rain-date').value = new Date().toISOString().split('T')[0];
+
+                await loadFarmerLands();
+                await loadTanks();
+                await loadFertilityScore();
+                await loadRainfallChart();
+                await loadAlerts();
+            } catch (err) {
+                console.error('Failed to initialize dashboard:', err);
+            }
+        }
+
+        async function loadFarmerLands() {
+            const lands = await api.get('/land');
+            const tbody = document.getElementById('land-tbody');
+            tbody.innerHTML = '';
+
+            let totalSqm = 0;
+            if (!lands || lands.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:1.5rem;">${t('dash.plot_empty', 'अद्याप कोणतीही शेतजमीन नोंदवलेली नाही. वरील बटणावर क्लिक करून जोडा.')}</td></tr>`;
+            } else {
+                lands.forEach(l => {
+                    totalSqm += l.areaSqm;
+                    const gunthe = (l.areaSqm / 101.17).toFixed(1);
+                    const acres = (l.areaSqm / 4046.86).toFixed(2);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${l.plotName}</strong></td>
+                        <td>${l.areaSqm.toLocaleString()} m²</td>
+                        <td>${gunthe} ${t('units.gunthe', 'गुंठे')} (${acres} ${t('units.acres', 'एकर')})</td>
+                        <td><span class="badge badge-info">${l.surfaceType}</span></td>
+                        <td><button class="btn btn-danger btn-sm" data-id="${l.id}">${t('dash.plot_delete', 'हटवा')}</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                tbody.querySelectorAll('.btn-danger').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (confirm(t('dash.plot_delete_confirm', 'हा भूखंड हटवायचा आहे का?'))) {
+                            await api.delete('/land/' + btn.dataset.id);
+                            api.showToast(t('dash.plot_deleted', 'भूखंड हटवला गेला'), 'info');
+                            loadFarmerLands();
+                        }
+                    });
+                });
+            }
+
+            const totalGunthe = (totalSqm / 101.17).toFixed(1);
+            document.getElementById('stat-land').textContent = `${totalGunthe} ${t('units.gunthe', 'गुंठे')}`;
+        }
+
+        function formatStructureName(name) {
+            const lang = getCurrentLanguage();
+            if (!name) return '';
+            if (name.includes('Mukhya Shettale') || name.includes('मुख्य शेततळे') || name.includes('Main Farm Pond')) {
+                return lang === 'en' ? 'Main Farm Pond' : 'मुख्य शेततळे';
+            }
+            const match = name.match(/^([^(]+)\s*\(([^)]+)\)$/);
+            if (match) {
+                return lang === 'en' ? match[1].trim() : match[2].trim();
+            }
+            return name;
+        }
+
+        function formatBand(band) {
+            const lang = getCurrentLanguage();
+            const b = (band || '').toLowerCase();
+            if (lang === 'mr') {
+                if (b.includes('excel') || b.includes('उत्कृष्ट')) return 'उत्कृष्ट सुपीक';
+                if (b.includes('good') || b.includes('चांगल') || b.includes('उत्तम')) return 'उत्तम सुपीक';
+                if (b.includes('med') || b.includes('mod') || b.includes('मध्यम')) return 'मध्यम सुपीक';
+                if (b.includes('poor') || b.includes('low') || b.includes('कमी')) return 'कमी सुपीक';
+                return band ? band.replace(/\([^)]*\)/g, '').trim() : '';
+            } else {
+                if (b.includes('excel') || b.includes('उत्कृष्ट')) return 'Excellent';
+                if (b.includes('good') || b.includes('चांगल') || b.includes('उत्तम')) return 'Good Fertility';
+                if (b.includes('med') || b.includes('mod') || b.includes('मध्यम')) return 'Medium Fertility';
+                if (b.includes('poor') || b.includes('low') || b.includes('कमी')) return 'Low Fertility';
+                return band ? band.replace(/\([^)]*\)/g, '').trim() : '';
+            }
+        }
+
+        async function loadTanks() {
+            const tanks = await api.get('/tanks');
+            if (tanks && tanks.length > 0) {
+                const primary = tanks[0];
+                document.getElementById('stat-capacity').textContent = `${primary.capacityLitres.toLocaleString()} L`;
+                document.getElementById('stat-level').textContent = `${primary.currentLevelLitres.toLocaleString()} L`;
+                document.getElementById('stat-pct').textContent = `${primary.levelPercentage}% ${t('units.filled', 'भरलेले')}`;
+
+                // Update Gauge
+                const fill = document.getElementById('gauge-fill');
+                fill.style.height = `${primary.levelPercentage}%`;
+                fill.className = `water-fill ${primary.statusColor || 'green'}`;
+                document.getElementById('gauge-text').textContent = `${primary.levelPercentage}%`;
+                document.getElementById('gauge-tank-name').textContent = formatStructureName(primary.name);
+                document.getElementById('gauge-available').textContent = primary.currentLevelLitres.toLocaleString();
+                document.getElementById('gauge-total').textContent = primary.capacityLitres.toLocaleString();
+            } else {
+                document.getElementById('gauge-text').textContent = '0%';
+            }
+        }
+
+        async function loadFertilityScore() {
+            try {
+                const history = await api.get('/fertility/history');
+                if (history && history.length > 0) {
+                    const latest = history[0];
+                    document.getElementById('stat-fertility').textContent = `${latest.score} / 100`;
+                    document.getElementById('stat-band').textContent = formatBand(latest.band);
+                }
+            } catch (ignored) {}
+        }
+
+        async function loadRainfallChart() {
+            const summary = await api.get('/rainfall/summary?year=' + new Date().getFullYear());
+            const monthly = summary ? summary.monthly : {};
+            const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const dataVals = labels.map((_, idx) => {
+                const m = String(idx + 1).padStart(2, '0');
+                return monthly[m] || 0;
+            });
+
+            const ctx = document.getElementById('rainfallChart').getContext('2d');
+            if (rainfallChart) rainfallChart.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+            gradient.addColorStop(0, 'rgba(2, 132, 199, 0.85)');
+            gradient.addColorStop(1, 'rgba(2, 132, 199, 0.25)');
+
+            rainfallChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: t('dash.rain_chart_my', 'माझा नोंदवलेला पाऊस (मि.मी.)'),
+                        data: dataVals,
+                        backgroundColor: gradient,
+                        borderColor: '#0284c7',
+                        borderWidth: 1.5,
+                        borderRadius: 8,
+                        hoverBackgroundColor: '#0369a1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: {
+                                    family: "'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif",
+                                    weight: 600
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        y: { 
+                            beginAtZero: true, 
+                            title: { 
+                                display: true, 
+                                text: t('dash.rain_y_axis', 'मि.मी.'),
+                                font: {
+                                    family: "'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif",
+                                    weight: 600
+                                }
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadAlerts() {
+            const alerts = await api.get('/alerts');
+            const container = document.getElementById('alerts-container');
+            if (alerts && alerts.length > 0) {
+                container.innerHTML = '';
+                alerts.slice(0, 3).forEach(a => {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'padding:0.85rem 1rem;margin-bottom:0.65rem;background:var(--color-warning-bg);border:1px solid var(--color-warning-border);border-left:4px solid var(--color-warning);border-radius:var(--radius-md);display:flex;justify-content:space-between;align-items:center;';
+                    div.innerHTML = `
+                        <div style="font-size:0.92rem;">
+                            <strong>${a.type === 'LOW_TANK' ? '⚠️ ' + t('dash.alert_low', 'पाणी पातळी कमी') : '🔔 ' + t('dash.alert_general', 'सूचना')}</strong>: 
+                            ${a.messageParams || 'टाकीतील पाणी २०% पेक्षा कमी झाले आहे.'}
+                        </div>
+                        <a href="/tank.html" class="btn btn-secondary btn-sm">${t('dash.alert_view', 'पहा')}</a>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        // Toggle Quick Rain Entry
+        document.getElementById('btn-quick-rain').onclick = () => {
+            const box = document.getElementById('quick-rain-box');
+            box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+        };
+        document.getElementById('btn-close-rain').onclick = () => {
+            document.getElementById('quick-rain-box').style.display = 'none';
+        };
+
+        // Submit Quick Rain
+        document.getElementById('rain-entry-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                recordDate: document.getElementById('rain-date').value,
+                rainfallMm: parseFloat(document.getElementById('rain-mm').value),
+                note: document.getElementById('rain-note').value.trim()
+            };
+            await api.post('/rainfall', payload);
+            api.showToast(t('dash.rain_saved', 'पावसाची नोंद झाली!'), 'success');
+            document.getElementById('quick-rain-box').style.display = 'none';
+            loadRainfallChart();
+        };
+
+        // Toggle Plot Form
+        document.getElementById('btn-add-plot').onclick = () => {
+            document.getElementById('plot-form-box').style.display = 'block';
+        };
+        document.getElementById('btn-cancel-plot').onclick = () => {
+            document.getElementById('plot-form-box').style.display = 'none';
+        };
+
+        // Submit Land Plot
+        document.getElementById('land-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                plotName: document.getElementById('plot-name').value.trim(),
+                areaSqm: parseFloat(document.getElementById('plot-area').value),
+                surfaceType: document.getElementById('plot-surface').value
+            };
+            await api.post('/land', payload);
+            api.showToast(t('dash.plot_added', 'भूखंड यशस्वीरित्या जोडला!'), 'success');
+            document.getElementById('plot-form-box').style.display = 'none';
+            document.getElementById('land-form').reset();
+            loadFarmerLands();
+        };
+
+        // Listen for language changes to update dynamic chart & labels
+        window.addEventListener('languageChange', () => {
+            loadFarmerLands();
+            loadTanks();
+            loadRainfallChart();
+            loadAlerts();
+        });
+
+        initDashboard();
+    </script>
+</body>
+</html>

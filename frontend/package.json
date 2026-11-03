@@ -1,0 +1,17 @@
+{
+  "name": "rwh-monitor-frontend",
+  "version": "1.0.0",
+  "description": "Frontend UI for Rainwater Harvesting & Water Conservation Monitor",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "dev": "npx serve -l 3000 ."
+  },
+  "keywords": [
+    "rainwater-harvesting",
+    "water-conservation",
+    "maharashtra",
+    "farmers"
+  ],
+  "author": "DBIT IT Community Project",
+  "license": "MIT"
+}

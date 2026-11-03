@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="community.title">महाराष्ट्रातील लोकसहभाग व जल चळवळ</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 950px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div style="text-align:center;margin-bottom:2rem;">
+            <div style="font-size:3rem;">🤝</div>
+            <h2 data-i18n="community.title">महाराष्ट्रातील लोकसहभाग व जल चळवळ (Jal Chalval)</h2>
+            <p style="color:var(--color-text-muted);max-width:750px;margin:0 auto;" data-i18n="community.subtitle">
+                महाराष्ट्रातील दुष्काळप्रवण भागातील पाणीटंचाईवर मात करण्यासाठी लोकसहभाग, श्रमदान आणि संस्थात्मक प्रयत्नांचा आदरपूर्वक परिचय.
+            </p>
+        </div>
+
+        <!-- How this digital tool helps a village group -->
+        <div class="card" style="background:var(--color-surface-alt);border:2px solid var(--color-primary);margin-bottom:2rem;">
+            <h3 data-i18n="community.help_title">💡 हे डिजिटल साधन गाव समूहाला (Village Group) कसे मदत करते?</h3>
+            <p data-i18n="community.help_intro">
+                पाणी फाउंडेशन किंवा नाम फाउंडेशनच्या कामातून गावात खोदलेली शेततळी आणि सिमेंट बंधारे यांचा प्रत्यक्ष फायदा शेतकऱ्यांना मिळण्यासाठी:
+            </p>
+            <ul style="padding-left:1.5rem;line-height:1.8;">
+                <li data-i18n-html="community.help_1"><strong>वैयक्तिक साठा ट्रॅकिंग:</strong> श्रमदानातून बांधलेल्या शेततळ्यातील पाणीसाठा दिवसेंदिवस किती शिल्लक आहे हे शेतकरी मोबाईलवर ट्रॅक करू शकतात.</li>
+                <li data-i18n-html="community.help_2"><strong>हंगामी पाणी ताळेबंद:</strong> पुढील रब्बी किंवा उन्हाळी पिकासाठी उपलब्ध पाणी पुरेसे आहे का, याचा आगाऊ अंदाज घेता येतो.</li>
+                <li data-i18n-html="community.help_3"><strong>देखभाल आठवणी:</strong> पावसाळ्यापूर्वी गाळ काढणे व इनलेट फिल्टर साफ करण्याच्या वेळेवर सूचना मिळतात.</li>
+            </ul>
+        </div>
+
+        <div class="grid grid-2" id="partners-container">
+            <!-- Dynamically loaded from /api/partners -->
+        </div>
+
+        <!-- Accuracy & Disclaimer Note -->
+        <div style="margin-top:2rem;padding:1rem;background:var(--color-surface);border-radius:var(--radius-md);border:1px solid var(--color-border);font-size:0.85rem;color:var(--color-text-muted);" data-i18n-html="community.disclaimer">
+            <strong>माहिती व सत्यता नोंद (Accuracy Rule):</strong> येथे दिलेली माहिती संस्थांच्या अधिकृत संकेतस्थळावरून (Organisation-reported) संकलित केली आहे. हे संकेतस्थळ डॉन बॉस्को इन्स्टिट्यूट ऑफ टेक्नॉलॉजी (DBIT) च्या माहिती तंत्रज्ञान विभागाचा शैक्षणिक समुदाय प्रकल्प आहे. संस्थांशी कोणतीही अधिकृत भागीदारी दर्शवत नाही.
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage } from '/js/i18n.js';
+
+        async function loadPartners() {
+            const list = await api.get('/partners', false);
+            const container = document.getElementById('partners-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const isMr = getCurrentLanguage() === 'mr';
+
+            if (list) {
+                list.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h3>${p.name}</h3>
+                        </div>
+                        <p style="line-height:1.7;font-size:0.95rem;">
+                            ${isMr ? p.focusMr : p.focusEn}
+                        </p>
+                        <div style="margin-top:1rem;font-size:0.85rem;color:var(--color-text-muted);">
+                            ${p.reportedNote}
+                        </div>
+                        <div style="margin-top:1rem;">
+                            <a href="${p.websiteUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                                ${isMr ? 'अधिकृत संकेतस्थळ भेट &rarr;' : 'Visit Official Website &rarr;'}
+                            </a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        window.addEventListener('languageChange', loadPartners);
+        loadPartners();
+    </script>
+</body>
+</html>

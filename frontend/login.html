@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="login.title">शेतकरी व कर्मचारी लॉगिन</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 480px; margin-top: 3rem;">
+        <div class="card" style="padding: 2.25rem;">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 3rem;">🌾</div>
+                <h2 data-i18n="login.title">शेतकरी लॉगिन</h2>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;" data-i18n="login.subtitle">आपल्या मोबाईल नंबर व पासवर्डने प्रवेश करा</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label data-i18n="login.phone">मोबाईल क्रमांक</label>
+                    <input type="text" id="phone" placeholder="7777777701" required autofocus maxlength="10">
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="login.password">पासवर्ड</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" data-i18n="login.submit">
+                    साइन इन करा
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem; font-size: 0.95rem;">
+                <a href="/register.html" data-i18n="login.no_account">खाते नाही? येथे नोंदणी करा</a>
+            </div>
+
+            <!-- Demo credentials hint for testing -->
+            <div style="margin-top: 1.75rem; padding: 0.75rem; background: var(--color-surface-alt); border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--color-text-muted);" data-i18n-html="login.demo_credentials">
+                <strong>चाचणीसाठी लॉगिन माहिती:</strong><br>
+                • शेतकरी: <code>7777777701</code> / <code>farmer123</code><br>
+                • फील्ड वर्कर: <code>8888888888</code> / <code>field123</code><br>
+                • प्रशासक: <code>9999999999</code> / <code>admin123</code>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await api.post('/auth/login', { phone, password }, false);
+                api.setToken(res.token);
+                api.setCurrentUser(res.user);
+                api.showToast('लॉगिन यशस्वी! (Login successful)', 'success');
+
+                setTimeout(() => {
+                    if (res.user.role === 'ADMIN') {
+                        window.location.href = '/admin.html';
+                    } else if (res.user.role === 'FIELD_WORKER') {
+                        window.location.href = '/assist.html';
+                    } else {
+                        window.location.href = '/dashboard.html';
+                    }
+                }, 600);
+            } catch (err) {
+                // error toast shown by api.js
+            }
+        });
+    </script>
+</body>
+</html>

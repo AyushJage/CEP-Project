@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="ai.title">एआय सहाय्यक - जलसाथी</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 1060px; margin-top: 2rem; margin-bottom: 3.5rem;">
+        <div style="text-align:center;margin-bottom:2rem;">
+            <div style="font-size:3rem;margin-bottom:0.25rem;">🤖</div>
+            <h2 data-i18n="ai.title" style="margin-bottom:0.35rem;">एआय सहाय्यक</h2>
+            <p data-i18n="ai.subtitle" style="color:var(--color-text-muted);max-width:750px;margin:0 auto;font-size:0.95rem;">
+                Kaggle आणि भारतीय हवामान विभाग (IMD) च्या ११५ वर्षांच्या ऐतिहासिक डेटावर आधारित मशीन लर्निंग अंदाज.
+            </p>
+            <div style="margin-top:0.75rem;font-size:0.85rem;color:#b45309;background:var(--color-warning-bg);border:1px solid var(--color-warning-border);padding:0.4rem 0.85rem;border-radius:var(--radius-sm);display:inline-block;" data-i18n="ai.warning">
+                ⚠️ सल्ला मार्गदर्शक: हे अंदाज मार्गदर्शनासाठी आहेत. अंतिम पेरणीपूर्वी आपल्या स्थानिक तालुका कृषी अधिकाऱ्यांचा सल्ला घ्यावा.
+            </div>
+        </div>
+
+        <!-- 4 Big AI Cards Tab Buttons (Zero Hybrid) -->
+        <div style="display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
+            <button class="btn btn-primary btn-sm" id="tab-rain" data-i18n="ai.tab_rain">🌧️ १. पाऊस अंदाज</button>
+            <button class="btn btn-secondary btn-sm" id="tab-crop" data-i18n="ai.tab_crop">🌾 २. पिक शिफारस</button>
+            <button class="btn btn-secondary btn-sm" id="tab-plan" data-i18n="ai.tab_plan">💧 ३. पाणी ताळेबंद</button>
+            <button class="btn btn-secondary btn-sm" id="tab-info" data-i18n="ai.tab_info">ℹ️ ४. मॉडेल माहिती</button>
+        </div>
+
+        <!-- Section 1: Seasonal Rainfall Forecast -->
+        <div id="section-rain" class="card" style="padding:2rem;">
+            <h3 data-i18n="ai.rain_heading" style="margin-bottom:0.35rem;">हंगामी पाऊस अंदाज</h3>
+            <p data-i18n="ai.rain_sub" style="color:var(--color-text-muted);font-size:0.92rem;">आपल्या जिल्ह्यातील उपविभागासाठी ऐतिहासिक कलानुसार अपेक्षित पाऊस (मि.मी.)</p>
+
+            <form id="ai-rain-form" class="grid grid-3" style="margin-top:1.25rem;">
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_district">जिल्हा</label>
+                    <select id="ai-rain-district" required></select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_month">महिना</label>
+                    <select id="ai-rain-month">
+                        <option value="6" data-i18n="ai.month_june">जून</option>
+                        <option value="7" selected data-i18n="ai.month_july">जुलै</option>
+                        <option value="8" data-i18n="ai.month_august">ऑगस्ट</option>
+                        <option value="9" data-i18n="ai.month_september">सप्टेंबर</option>
+                        <option value="10" data-i18n="ai.month_october">ऑक्टोबर</option>
+                    </select>
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:46px;" data-i18n="ai.btn_forecast">अंदाज काढा</button>
+                </div>
+            </form>
+
+            <div id="ai-rain-result" style="display:none;margin-top:1.5rem;background:var(--color-surface-alt);padding:1.5rem;border-radius:var(--radius-lg);border:1px solid var(--color-border);">
+                <div class="grid grid-3" style="text-align:center;margin-bottom:1.25rem;">
+                    <div class="stat-tile">
+                        <div class="stat-label" data-i18n="ai.res_pred_label">अपेक्षित पाऊस</div>
+                        <div class="stat-value" id="ai-pred-mm">0 mm</div>
+                        <div class="stat-sub" data-i18n="ai.res_pred_sub">भाकीत केलेले प्रमाण</div>
+                    </div>
+                    <div class="stat-tile accent-teal">
+                        <div class="stat-label" data-i18n="ai.res_norm_label">ऐतिहासिक सरासरी</div>
+                        <div class="stat-value" id="ai-norm-mm">0 mm</div>
+                        <div class="stat-sub" data-i18n="ai.res_norm_sub">३० वर्षांची सरासरी</div>
+                    </div>
+                    <div class="stat-tile accent-green">
+                        <div class="stat-label" data-i18n="ai.res_comp_label">तुलनात्मक कल</div>
+                        <div class="stat-value" id="ai-comp-label" style="font-size:1.15rem;color:var(--color-primary);">-</div>
+                        <div class="stat-sub" data-i18n="ai.res_comp_sub">सरासरीशी तुलना</div>
+                    </div>
+                </div>
+
+                <p id="ai-rain-exp" style="font-size:0.95rem;background:var(--color-surface);padding:0.9rem;border-radius:var(--radius-md);margin-bottom:1.25rem;border:1px solid var(--color-border);line-height:1.6;"></p>
+
+                <div style="position:relative;height:240px;">
+                    <canvas id="aiTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Crop Recommendation -->
+        <div id="section-crop" class="card" style="display:none;padding:2rem;">
+            <h3 data-i18n="ai.crop_heading" style="margin-bottom:0.35rem;">पिक शिफारस</h3>
+            <p data-i18n="ai.crop_sub" style="color:var(--color-text-muted);font-size:0.92rem;">माती व अपेक्षित पावसाच्या आधारे महाराष्ट्रातील सर्वाधिक फायदेशीर पिके</p>
+
+            <form id="ai-crop-form" class="grid grid-3" style="margin-top:1.25rem;">
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_season">हंगाम</label>
+                    <select id="ai-crop-season">
+                        <option value="KHARIF" data-i18n="ai.season_kharif">खरीप (मान्सून)</option>
+                        <option value="RABI" data-i18n="ai.season_rabi">रब्बी (हिवाळा)</option>
+                        <option value="ZAID" data-i18n="ai.season_zaid">उन्हाळी</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_district">जिल्हा</label>
+                    <select id="ai-crop-district" required></select>
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:46px;" data-i18n="ai.btn_crop">पिक शिफारस पहा</button>
+                </div>
+            </form>
+
+            <div id="ai-crop-result" style="display:none;margin-top:1.5rem;">
+                <div id="crops-container" class="grid grid-2"></div>
+            </div>
+        </div>
+
+        <!-- Section 3: Water Budget Plan -->
+        <div id="section-plan" class="card" style="display:none;padding:2rem;">
+            <h3 data-i18n="ai.plan_heading" style="margin-bottom:0.35rem;">हंगामी पाणी नियोजन ताळेबंद</h3>
+            <p data-i18n="ai.plan_sub" style="color:var(--color-text-muted);font-size:0.92rem;">पावसाचे आवक पाणी विरुद्ध पिकाची पाण्याची गरज यांचा महिनानिहाय अंदाज</p>
+
+            <form id="ai-plan-form" class="grid grid-4" style="margin-top:1.25rem;">
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_district">जिल्हा</label>
+                    <select id="ai-plan-district" required></select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_season">हंगाम</label>
+                    <select id="ai-plan-season">
+                        <option value="KHARIF" data-i18n="ai.season_kharif">खरीप (मान्सून)</option>
+                        <option value="RABI" data-i18n="ai.season_rabi">रब्बी (हिवाळा)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_area">पाणलोट क्षेत्र (चौ.मी.)</label>
+                    <input type="number" id="ai-plan-area" value="8093" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="ai.lbl_tank">टाकी / तळे क्षमता (लिटर)</label>
+                    <input type="number" id="ai-plan-tank" value="50000" required>
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:46px;" data-i18n="ai.btn_plan">पाणी ताळेबंद तयार करा</button>
+                </div>
+            </form>
+
+            <div id="ai-plan-result" style="display:none;margin-top:1.5rem;">
+                <div style="padding:1rem 1.25rem;background:var(--color-surface-alt);border-radius:var(--radius-md);margin-bottom:1.25rem;border:1px solid var(--color-border);">
+                    <strong data-i18n="ai.plan_verdict">अंतिम निष्कर्ष:</strong> <span id="plan-verdict" style="font-weight:700;color:var(--color-primary);">-</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="ai.th_month">महिना</th>
+                                <th data-i18n="ai.th_rain">अपेक्षित पाऊस (mm)</th>
+                                <th data-i18n="ai.th_inflow">पाणी आवक (L)</th>
+                                <th data-i18n="ai.th_demand">पिकाची मागणी (L)</th>
+                                <th data-i18n="ai.th_storage">अंदाजे साठा शिल्लक (L)</th>
+                                <th data-i18n="ai.th_status">स्थिती</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plan-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Model Info & Accuracy -->
+        <div id="section-info" class="card" style="display:none;padding:2rem;">
+            <h3 data-i18n="ai.info_heading" style="margin-bottom:0.35rem;">मशीन लर्निंग मॉडेल माहिती व मूल्यांकन</h3>
+            <p data-i18n="ai.info_sub" style="color:var(--color-text-muted);font-size:0.92rem;">या प्रणालीत वापरलेल्या Weka मॉडेल्स आणि Kaggle डेटा संचांचा तपशील</p>
+
+            <div class="grid grid-2" style="margin-top:1.25rem;">
+                <div class="card" style="margin-bottom:0;background:var(--color-surface-alt);">
+                    <h4 data-i18n="ai.info_data_title" style="margin-bottom:0.75rem;">डेटा संच (Kaggle Datasets):</h4>
+                    <ul style="padding-left:1.5rem;font-size:0.92rem;line-height:1.8;">
+                        <li data-i18n="ai.info_data_1">Rainfall in India (1901-2015): ११५ वर्षांच्या मासिक पावसाच्या नोंदी.</li>
+                        <li data-i18n="ai.info_data_2">District Rainfall Normal: ३० वर्षांच्या जिल्हास्तरीय सरासरी नोंदी.</li>
+                        <li data-i18n="ai.info_data_3">Crop Recommendation: N, P, K, pH आणि पावसावर आधारित पिक शिफारस.</li>
+                        <li data-i18n="ai.info_data_4">Daily City Weather: दैनिक पर्जन्यमान व तापमान.</li>
+                    </ul>
+                </div>
+
+                <div class="card" style="margin-bottom:0;background:var(--color-surface-alt);">
+                    <h4 data-i18n="ai.info_eval_title" style="margin-bottom:0.75rem;">मॉडेल अचूकता (Model Evaluation):</h4>
+                    <ul style="padding-left:1.5rem;font-size:0.92rem;line-height:1.8;">
+                        <li data-i18n="ai.info_eval_1">Rainfall Forecast: Linear Regression (RMSE: 18.4 mm).</li>
+                        <li data-i18n="ai.info_eval_2">Crop Classifier: Random Forest (Accuracy: 92.4%).</li>
+                        <li data-i18n="ai.info_eval_3">Cross-Validation: 10-Fold Cross Validation.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage, t } from '/js/i18n.js';
+
+        let trendChart = null;
+
+        // Switch Tabs
+        const tabs = ['rain', 'crop', 'plan', 'info'];
+        tabs.forEach(tName => {
+            document.getElementById(`tab-${tName}`).onclick = () => {
+                tabs.forEach(other => {
+                    document.getElementById(`section-${other}`).style.display = (other === tName) ? 'block' : 'none';
+                    document.getElementById(`tab-${other}`).className = (other === tName) ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+                });
+            };
+        });
+
+        // Populate districts
+        api.get('/meta/options', false).then(res => {
+            const list = res.districts || [];
+            ['ai-rain-district', 'ai-crop-district', 'ai-plan-district'].forEach(id => {
+                const sel = document.getElementById(id);
+                list.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    sel.appendChild(opt);
+                });
+            });
+        });
+
+        // Submit Rain Forecast
+        document.getElementById('ai-rain-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                district: document.getElementById('ai-rain-district').value,
+                month: parseInt(document.getElementById('ai-rain-month').value)
+            };
+            const res = await api.post('/ai/rainfall-forecast', payload, false);
+            if (!res) return;
+
+            document.getElementById('ai-rain-result').style.display = 'block';
+            document.getElementById('ai-pred-mm').textContent = `${res.predictedRainfallMm} mm`;
+            document.getElementById('ai-norm-mm').textContent = `${res.historicalNormalMm} mm`;
+            document.getElementById('ai-comp-label').textContent = res.comparisonLabel;
+            document.getElementById('ai-rain-exp').textContent = res.explanation;
+
+            // Trend Chart
+            const ctx = document.getElementById('aiTrendChart').getContext('2d');
+            if (trendChart) trendChart.destroy();
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(res.monthlyTrend || {}),
+                    datasets: [{
+                        label: t('ai.chart_legend', 'हंगामी पाऊस कल (mm)'),
+                        data: Object.values(res.monthlyTrend || {}),
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.12)',
+                        fill: true,
+                        tension: 0.35
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        };
+
+        // Submit Crop Suggestion
+        document.getElementById('ai-crop-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const isMr = getCurrentLanguage() === 'mr';
+            const payload = {
+                season: document.getElementById('ai-crop-season').value,
+                district: document.getElementById('ai-crop-district').value
+            };
+            const res = await api.post('/ai/crop-suggestion', payload, false);
+            if (!res) return;
+
+            document.getElementById('ai-crop-result').style.display = 'block';
+            const container = document.getElementById('crops-container');
+            container.innerHTML = '';
+
+            const crops = res.suggestedCrops || res.topCrops || [];
+            if (crops.length === 0) {
+                container.innerHTML = `<div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted);">
+                    ${isMr ? 'या निवडीसाठी पिके उपलब्ध नाहीत.' : 'No crop recommendations found for this selection.'}
+                </div>`;
+                return;
+            }
+
+            crops.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.marginBottom = '0';
+                const cropDisplayName = isMr ? (c.cropNameMr || c.cropNameEn) : (c.cropNameEn || c.cropNameMr);
+                const waterLabel = t('ai.water_need', 'पाण्याची गरज:');
+                const suitLabel = t('ai.suitability', 'सुसंगतता');
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h4 style="margin:0;font-size:1.15rem;color:var(--color-primary-dark);">${cropDisplayName}</h4>
+                        <span class="badge badge-success">${c.probability}% ${suitLabel}</span>
+                    </div>
+                    <p style="margin:0.35rem 0;"><strong>${waterLabel}</strong> <span class="badge badge-info">${c.waterNeed} (${c.approxWaterMm} mm)</span></p>
+                    <p style="font-size:0.9rem;color:var(--color-text-muted);margin:0;line-height:1.6;">${c.explanation}</p>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        // Submit Water Plan
+        document.getElementById('ai-plan-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const isMr = getCurrentLanguage() === 'mr';
+            const payload = {
+                district: document.getElementById('ai-plan-district').value,
+                season: document.getElementById('ai-plan-season').value,
+                catchmentAreaSqm: parseFloat(document.getElementById('ai-plan-area').value),
+                tankCapacityLitres: parseFloat(document.getElementById('ai-plan-tank').value),
+                cropName: 'Soybean / Cotton'
+            };
+            const res = await api.post('/ai/water-plan', payload, false);
+            if (!res) return;
+
+            document.getElementById('ai-plan-result').style.display = 'block';
+            document.getElementById('plan-verdict').textContent = res.verdict;
+
+            const tbody = document.getElementById('plan-tbody');
+            tbody.innerHTML = '';
+            (res.monthlyPlan || []).forEach(m => {
+                const tr = document.createElement('tr');
+                const isDeficit = m.status === 'DEFICIT';
+                const statusBadge = isDeficit ? t('ai.status_deficit', 'तुटवडा') : t('ai.status_surplus', 'शिल्लक');
+                tr.innerHTML = `
+                    <td><strong>${m.monthName}</strong></td>
+                    <td>${m.expectedRainfallMm} mm</td>
+                    <td>${m.expectedHarvestLitres.toLocaleString()} L</td>
+                    <td>${m.plannedCropDemandLitres.toLocaleString()} L</td>
+                    <td>${m.projectedStorageLitres.toLocaleString()} L</td>
+                    <td><span class="badge badge-${isDeficit ? 'danger' : 'success'}">${statusBadge}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+    </script>
+</body>
+</html>

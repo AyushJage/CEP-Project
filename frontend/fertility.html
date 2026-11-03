@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="fertility.title">माती सुपीकता तपासणी व सुधारणा</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card">
+            <h2 data-i18n="fertility.title">माती सुपीकता तपासणी व सुधारणा</h2>
+            <p style="color:var(--color-text-muted);" data-i18n="fertility.subtitle">
+                माती आरोग्य पत्रिकेतील घटक प्रविष्ट करा किंवा अंदाजे श्रेणी निवडून जमिनीचा सुपीकता निर्देशांक (० - १००) तपासा.
+            </p>
+
+            <!-- Quick Preset Helper -->
+            <div style="margin: 1rem 0; padding: 0.75rem 1rem; background: var(--color-surface-alt); border-radius: var(--radius-md); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                <span style="font-weight:600;font-size:0.9rem;" data-i18n="fertility.preset_prompt">माती परीक्षण अहवाल नाही? अंदाजे श्रेणी भरा:</span>
+                <div style="display:flex;gap:0.5rem;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-preset-poor" data-i18n="fertility.preset_low">कमी सुपीक</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-preset-med" data-i18n="fertility.preset_med">मध्यम सुपीक</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-preset-good" data-i18n="fertility.preset_good">चांगली सुपीक</button>
+                </div>
+            </div>
+
+            <form id="fertility-form" class="grid grid-3" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label data-i18n="fertility.ph_label">सामू (pH) [६.५ - ७.५ आदर्श]</label>
+                    <input type="number" step="0.1" id="f-ph" data-i18n-placeholder="fertility.ph_placeholder" placeholder="उदा. ७.२" min="0" max="14" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="fertility.n_label">नत्र (किलो/हेक्टर)</label>
+                    <input type="number" step="1" id="f-n" data-i18n-placeholder="fertility.n_placeholder" placeholder="उदा. ३२०" min="0">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="fertility.p_label">स्फुरद (किलो/हेक्टर)</label>
+                    <input type="number" step="0.1" id="f-p" data-i18n-placeholder="fertility.p_placeholder" placeholder="उदा. १८.५" min="0">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="fertility.k_label">पालाश (किलो/हेक्टर)</label>
+                    <input type="number" step="1" id="f-k" data-i18n-placeholder="fertility.k_placeholder" placeholder="उदा. २४०" min="0">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="fertility.oc_label">सेंद्रिय कर्ब (%)</label>
+                    <input type="number" step="0.01" id="f-oc" data-i18n-placeholder="fertility.oc_placeholder" placeholder="उदा. ०.६५" min="0" max="10">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="fertility.ec_label">क्षारता (dS/m)</label>
+                    <input type="number" step="0.01" id="f-ec" data-i18n-placeholder="fertility.ec_placeholder" placeholder="उदा. ०.८" min="0">
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:50px;font-size:1.05rem;" data-i18n="fertility.btn_assess">
+                        सुपीकता तपासा
+                    </button>
+                </div>
+            </form>
+
+            <!-- Assessment Results Panel -->
+            <div id="fertility-result-card" style="display:none;margin-top:2rem;padding:1.5rem;border-radius:var(--radius-lg);border:2px solid var(--color-primary);background:var(--color-surface);">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                    <div>
+                        <h3 style="margin:0;" data-i18n="fertility.res_heading">माती सुपीकता निर्देशांक अहवाल</h3>
+                        <span id="fert-band" class="badge badge-success" style="font-size:0.9rem;margin-top:0.35rem;">-</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:2.4rem;font-weight:800;color:var(--color-primary);" id="fert-score">0</span>
+                        <span style="font-size:1.2rem;color:var(--color-text-muted);">/ 100</span>
+                    </div>
+                </div>
+
+                <!-- Parameter Status Table -->
+                <h4 data-i18n="fertility.res_status_heading">घटक निहाय स्थिती</h4>
+                <div class="table-responsive" style="margin-bottom:1.5rem;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="fertility.th_param">घटक</th>
+                                <th data-i18n="fertility.th_status">स्थिती</th>
+                            </tr>
+                        </thead>
+                        <tbody id="param-status-tbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Agronomic Improvement Tips -->
+                <h4 style="color:var(--color-primary-dark);" data-i18n="fertility.tips_heading">🌱 शेतात सुधारणा करण्यासाठी कृषी तज्ञांचे सल्ले</h4>
+                <ul id="fert-tips-list" style="padding-left:1.5rem;line-height:1.8;margin-top:0.5rem;"></ul>
+            </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="card">
+            <h3 data-i18n="fertility.history_title">मागील तपासणी इतिहास</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="fertility.th_date">तारीख</th>
+                            <th data-i18n="fertility.th_ph">सामू</th>
+                            <th data-i18n="fertility.th_n">नत्र</th>
+                            <th data-i18n="fertility.th_oc">सेंद्रिय कर्ब</th>
+                            <th data-i18n="fertility.th_score">गुण</th>
+                            <th data-i18n="fertility.th_band">दर्जा</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);">...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { t, getCurrentLanguage, translateDOM } from '/js/i18n.js';
+
+        // Presets helper
+        document.getElementById('btn-preset-poor').onclick = () => {
+            document.getElementById('f-ph').value = 8.6;
+            document.getElementById('f-n').value = 180;
+            document.getElementById('f-p').value = 8.5;
+            document.getElementById('f-k').value = 95;
+            document.getElementById('f-oc').value = 0.35;
+            document.getElementById('f-ec').value = 2.4;
+        };
+        document.getElementById('btn-preset-med').onclick = () => {
+            document.getElementById('f-ph').value = 7.6;
+            document.getElementById('f-n').value = 350;
+            document.getElementById('f-p').value = 16.0;
+            document.getElementById('f-k').value = 180;
+            document.getElementById('f-oc').value = 0.60;
+            document.getElementById('f-ec').value = 0.9;
+        };
+        document.getElementById('btn-preset-good').onclick = () => {
+            document.getElementById('f-ph').value = 7.1;
+            document.getElementById('f-n').value = 580;
+            document.getElementById('f-p').value = 28.0;
+            document.getElementById('f-k').value = 310;
+            document.getElementById('f-oc').value = 0.85;
+            document.getElementById('f-ec').value = 0.5;
+        };
+
+        function formatBand(band) {
+            const lang = getCurrentLanguage();
+            const b = (band || '').toLowerCase();
+            if (lang === 'mr') {
+                if (b.includes('excel') || b.includes('उत्कृष्ट')) return 'उत्कृष्ट सुपीक';
+                if (b.includes('good') || b.includes('चांगल') || b.includes('उत्तम')) return 'चांगली सुपीक';
+                if (b.includes('med') || b.includes('mod') || b.includes('मध्यम')) return 'मध्यम सुपीक';
+                if (b.includes('poor') || b.includes('low') || b.includes('कमी') || b.includes('खराब')) return 'कमी सुपीक';
+                return 'चांगली सुपीक';
+            } else {
+                if (b.includes('excel') || b.includes('उत्कृष्ट')) return 'Excellent';
+                if (b.includes('good') || b.includes('चांगल') || b.includes('उत्तम')) return 'Good';
+                if (b.includes('med') || b.includes('mod') || b.includes('मध्यम')) return 'Moderate';
+                if (b.includes('poor') || b.includes('low') || b.includes('कमी') || b.includes('खराब')) return 'Poor';
+                return 'Good';
+            }
+        }
+
+        function formatParamName(param) {
+            const lang = getCurrentLanguage();
+            const p = (param || '').toLowerCase();
+            if (lang === 'mr') {
+                if (p.includes('ph')) return 'सामू (pH)';
+                if (p.includes('nit')) return 'नत्र';
+                if (p.includes('phos')) return 'स्फुरद';
+                if (p.includes('pot')) return 'पालाश';
+                if (p.includes('carb') || p.includes('कर्ब')) return 'सेंद्रिय कर्ब';
+                if (p.includes('ec') || p.includes('क्षार')) return 'क्षारता (EC)';
+                return param;
+            } else {
+                if (p.includes('ph')) return 'pH Value';
+                if (p.includes('nit')) return 'Nitrogen';
+                if (p.includes('phos')) return 'Phosphorus';
+                if (p.includes('pot')) return 'Potassium';
+                if (p.includes('carb') || p.includes('कर्ब')) return 'Organic Carbon';
+                if (p.includes('ec') || p.includes('क्षार')) return 'Electrical Conductivity';
+                return param;
+            }
+        }
+
+        function formatStatusValue(val) {
+            const lang = getCurrentLanguage();
+            const v = (val || '').toLowerCase();
+            if (lang === 'mr') {
+                if (v.includes('opt') || v.includes('ideal') || v.includes('उत्कृष्ट')) return 'उत्कृष्ट प्रमाण';
+                if (v.includes('good') || v.includes('चांगल')) return 'चांगले प्रमाण';
+                if (v.includes('med') || v.includes('mod') || v.includes('मध्यम')) return 'मध्यम प्रमाण';
+                if (v.includes('low') || v.includes('def') || v.includes('कमी')) return 'कमी प्रमाण';
+                if (v.includes('high') || v.includes('जास्त') || v.includes('उच्च')) return 'जास्त प्रमाण';
+                if (v.includes('acid') || v.includes('आम्ल')) return 'आम्लधर्मीय जमीन';
+                if (v.includes('alkal') || v.includes('क्षारपड')) return 'क्षारपड जमीन';
+                if (v.includes('norm') || v.includes('सुरक्षित')) return 'सुरक्षित प्रमाण';
+                if (v.includes('crit') || v.includes('धोका')) return 'मध्यम क्षारता';
+                if (v.includes('injur') || v.includes('अति')) return 'अति क्षारयुक्त';
+                return val.replace(/\s*\([^)]*\)/g, '');
+            } else {
+                if (v.includes('opt') || v.includes('ideal') || v.includes('उत्कृष्ट')) return 'Ideal';
+                if (v.includes('good') || v.includes('चांगल')) return 'Good';
+                if (v.includes('med') || v.includes('mod') || v.includes('मध्यम')) return 'Moderate';
+                if (v.includes('low') || v.includes('def') || v.includes('कमी')) return 'Low / Deficient';
+                if (v.includes('high') || v.includes('जास्त') || v.includes('उच्च')) return 'High';
+                if (v.includes('acid') || v.includes('आम्ल')) return 'Acidic';
+                if (v.includes('alkal') || v.includes('क्षारपड')) return 'Alkaline';
+                if (v.includes('norm') || v.includes('सुरक्षित')) return 'Normal / Safe';
+                if (v.includes('crit') || v.includes('धोका')) return 'Critical Salinity';
+                if (v.includes('injur') || v.includes('अति')) return 'Injurious Salinity';
+                return val.replace(/\s*\([^)]*\)/g, '');
+            }
+        }
+
+        function cleanTip(tip) {
+            const lang = getCurrentLanguage();
+            if (!tip) return '';
+            if (tip.includes('/')) {
+                const parts = tip.split('/');
+                return lang === 'en' ? parts[0].trim() : parts[1].trim();
+            }
+            return tip;
+        }
+
+        // Form Submit
+        document.getElementById('fertility-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                ph: parseFloat(document.getElementById('f-ph').value) || null,
+                nitrogen: parseFloat(document.getElementById('f-n').value) || null,
+                phosphorus: parseFloat(document.getElementById('f-p').value) || null,
+                potassium: parseFloat(document.getElementById('f-k').value) || null,
+                organicCarbon: parseFloat(document.getElementById('f-oc').value) || null,
+                ec: parseFloat(document.getElementById('f-ec').value) || null
+            };
+
+            const res = await api.post('/fertility/assess', payload, false);
+            renderResult(res);
+            loadHistory();
+        };
+
+        function renderResult(res) {
+            const card = document.getElementById('fertility-result-card');
+            card.style.display = 'block';
+            document.getElementById('fert-score').textContent = res.score;
+            document.getElementById('fert-band').textContent = formatBand(res.band);
+
+            // Parameter Status Table
+            const tbody = document.getElementById('param-status-tbody');
+            tbody.innerHTML = '';
+            for (const [key, val] of Object.entries(res.parameterStatus || {})) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>${formatParamName(key)}</strong></td><td><span class="badge badge-info">${formatStatusValue(val)}</span></td>`;
+                tbody.appendChild(tr);
+            }
+
+            // Tips List
+            const tipsList = document.getElementById('fert-tips-list');
+            tipsList.innerHTML = '';
+            (res.tips || []).forEach(tip => {
+                const li = document.createElement('li');
+                li.textContent = cleanTip(tip);
+                tipsList.appendChild(li);
+            });
+
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function loadHistory() {
+            const tbody = document.getElementById('history-tbody');
+            if (!api.getToken()) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);">${t('fertility.no_history', 'अद्याप कोणताही अहवाल जतन नाही. (इतिहास पाहण्यासाठी कृपया लॉगिन करा)')}</td></tr>`;
+                return;
+            }
+            try {
+                const list = await api.get('/fertility/history');
+                tbody.innerHTML = '';
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);">${t('fertility.no_history', 'अद्याप कोणताही अहवाल जतन नाही.')}</td></tr>`;
+                    return;
+                }
+                list.forEach(h => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${h.createdAt ? h.createdAt.substring(0,10) : '-'}</td>
+                        <td>${h.ph || '-'}</td>
+                        <td>${h.nitrogen || '-'} kg/ha</td>
+                        <td>${h.organicCarbon || '-'}%</td>
+                        <td><strong>${h.score}</strong></td>
+                        <td><span class="badge badge-success">${formatBand(h.band)}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (ignored) {}
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

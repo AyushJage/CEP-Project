@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="rec.title">जलसंधारण रचना सल्ला - जलसाथी</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3.5rem;">
+        <div class="card" style="padding: 2rem;">
+            <h2 data-i18n="rec.title" style="margin-bottom:0.35rem;">आपल्या शेतासाठी योग्य जलसंधारण रचना</h2>
+            <p data-i18n="rec.subtitle" style="color:var(--color-text-muted);font-size:0.95rem;">
+                आपली जमीन, सिंचनाचा स्रोत आणि मातीच्या प्रकारानुसार सर्वात फायदेशीर जलसंधारण रचनेचा सल्ला मिळवा.
+            </p>
+
+            <form id="rec-form" class="grid grid-2" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label data-i18n="rec.lbl_area">जमीन क्षेत्रफळ (चौ.मी.)</label>
+                    <input type="number" id="rec-area" data-i18n-placeholder="rec.ph_area" placeholder="उदा. ८०९३ (२ एकर)" required min="100">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="rec.lbl_irrigation">सध्याचा सिंचन स्रोत</label>
+                    <select id="rec-irrigation" required>
+                        <option value="Rain-fed" data-i18n="rec.opt_rainfed">कोरडवाहू (केवळ पाऊस)</option>
+                        <option value="Borewell" data-i18n="rec.opt_borewell">बोअरवेल</option>
+                        <option value="Well" data-i18n="rec.opt_well">विहीर</option>
+                        <option value="Canal" data-i18n="rec.opt_canal">कालवा</option>
+                        <option value="River" data-i18n="rec.opt_river">नदी किंवा ओढा</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="rec.lbl_existing">सध्या उपलब्ध रचना</label>
+                    <select id="rec-existing" required>
+                        <option value="None" data-i18n="rec.opt_none">कोणतीही नाही</option>
+                        <option value="Farm pond" data-i18n="rec.opt_pond">शेततळे</option>
+                        <option value="Storage tank" data-i18n="rec.opt_tank">पाण्याची टाकी</option>
+                        <option value="Check dam" data-i18n="rec.opt_dam">चेक डॅम / बांध</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="rec.lbl_soil">मातीचा प्रकार</label>
+                    <select id="rec-soil" required>
+                        <option value="Black (Regur)" data-i18n="rec.soil_black">काळी कसदार (रेगूर) माती</option>
+                        <option value="Red" data-i18n="rec.soil_red">तांबडी माती</option>
+                        <option value="Laterite" data-i18n="rec.soil_laterite">जांभी माती</option>
+                        <option value="Alluvial" data-i18n="rec.soil_alluvial">गाळाची माती</option>
+                        <option value="Loamy" data-i18n="rec.soil_loamy">पोयट्याची माती</option>
+                    </select>
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:48px;" data-i18n="rec.btn_submit">
+                        योग्य रचनेची शिफारस मिळवा
+                    </button>
+                </div>
+            </form>
+
+            <!-- Recommendation Result Output (Zero Hybrid) -->
+            <div id="rec-result-card" style="display:none;margin-top:2rem;background:var(--color-surface);border:1.5px solid var(--color-primary);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow-md);">
+                <div class="card-header" style="border-bottom-color:var(--color-primary-border);margin-bottom:1.25rem;">
+                    <div>
+                        <span class="badge badge-success" data-i18n="rec.badge_best">सर्वोत्तम रचना शिफारस</span>
+                        <h3 id="rec-structure-name" style="color:var(--color-primary-dark);margin-top:0.4rem;font-size:1.35rem;">-</h3>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:0.82rem;color:var(--color-text-muted);" data-i18n="rec.lbl_rec_cap">शिफारस केलेली क्षमता</span>
+                        <div id="rec-capacity" style="font-size:1.6rem;font-weight:800;color:var(--color-primary);">- L</div>
+                    </div>
+                </div>
+
+                <p id="rec-reason" style="font-size:0.95rem;margin-bottom:1.5rem;background:var(--color-surface-alt);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--color-border);line-height:1.6;"></p>
+
+                <!-- 2 Options Comparison Grid -->
+                <div class="grid grid-2" style="margin-bottom:1.5rem;">
+                    <div class="card" style="border-top:3.5px solid var(--color-accent);margin-bottom:0;background:var(--color-surface-alt);">
+                        <h4 style="color:var(--color-accent-dark);margin-bottom:0.4rem;" data-i18n="rec.lowcost_heading">💡 १. कमी खर्चाचा पर्याय (श्रमदान / स्थानिक साहित्य)</h4>
+                        <p id="rec-lowcost" style="font-size:0.92rem;margin:0;line-height:1.6;color:var(--color-text);"></p>
+                    </div>
+                    <div class="card" style="border-top:3.5px solid var(--color-primary);margin-bottom:0;background:var(--color-surface-alt);">
+                        <h4 style="color:var(--color-primary);margin-bottom:0.4rem;" data-i18n="rec.mech_heading">🏗️ २. यांत्रिकी पर्याय (शासकीय अनुदान पात्र)</h4>
+                        <p id="rec-mechanised" style="font-size:0.92rem;margin:0;line-height:1.6;color:var(--color-text);"></p>
+                    </div>
+                </div>
+
+                <!-- Prioritised Conservation Tips -->
+                <h4 data-i18n="rec.tips_heading" style="margin-bottom:0.75rem;">🌾 प्राधान्यक्रमाने जलसंधारण कृती</h4>
+                <ul id="rec-tips" style="padding-left:1.5rem;line-height:1.8;font-size:0.95rem;color:var(--color-text-secondary);"></ul>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage, t } from '/js/i18n.js';
+
+        let lastRec = null;
+
+        function renderRecommendation() {
+            if (!lastRec) return;
+            const isMr = getCurrentLanguage() === 'mr';
+            const name = lastRec.structureType || lastRec.structureNameMr || lastRec.structureNameEn || lastRec.structureName || '-';
+            const capacity = lastRec.suggestedCapacityLitres || lastRec.recommendedCapacityLitres || 0;
+            const reason = lastRec.reasonSummary || lastRec.reasonMr || lastRec.reasonEn || lastRec.reason || '-';
+            const lowCost = lastRec.lowCostOption || lastRec.lowCostOptionMr || lastRec.lowCostOptionEn || '-';
+            const mech = lastRec.mechanisedOption || lastRec.mechanisedOptionMr || lastRec.mechanisedOptionEn || '-';
+
+            document.getElementById('rec-structure-name').textContent = name;
+            document.getElementById('rec-capacity').textContent = `${Number(capacity).toLocaleString()} L`;
+            document.getElementById('rec-reason').textContent = reason;
+            document.getElementById('rec-lowcost').textContent = lowCost;
+            document.getElementById('rec-mechanised').textContent = mech;
+
+            const ul = document.getElementById('rec-tips');
+            ul.innerHTML = '';
+            const tips = lastRec.prioritisedTips || lastRec.prioritisedTipsMr || lastRec.prioritisedTipsEn || [];
+            tips.forEach(tip => {
+                const li = document.createElement('li');
+                li.textContent = tip;
+                ul.appendChild(li);
+            });
+        }
+
+        document.getElementById('rec-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                catchmentAreaSqm: parseFloat(document.getElementById('rec-area').value),
+                currentIrrigationSource: document.getElementById('rec-irrigation').value,
+                existingStructure: document.getElementById('rec-existing').value,
+                soilType: document.getElementById('rec-soil').value
+            };
+
+            const res = await api.post('/recommendations/generate', payload, false);
+            if (res) {
+                lastRec = res;
+                document.getElementById('rec-result-card').style.display = 'block';
+                renderRecommendation();
+            }
+        };
+
+        window.addEventListener('languageChange', renderRecommendation);
+    </script>
+</body>
+</html>

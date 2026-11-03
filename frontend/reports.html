@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="reports.title">पाणी संवर्धन अहवाल - जलसाथी</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3.5rem;">
+        <div class="card" style="padding: 2rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.25rem;margin-bottom:1.75rem;">
+                <div>
+                    <h2 data-i18n="reports.title" style="margin-bottom: 0.35rem;">वार्षिक पाणी संवर्धन अहवाल</h2>
+                    <p data-i18n="reports.subtitle" style="color:var(--color-text-muted);margin:0;">वार्षिक पाणी साठवण, वापर आणि शिल्लक ताळेबंद अहवाल</p>
+                </div>
+                <div style="display:flex;gap:0.75rem;">
+                    <button class="btn btn-primary btn-sm" id="btn-export-pdf" data-i18n="reports.btn_pdf">📄 PDF अहवाल</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-export-csv" data-i18n="reports.btn_csv">📊 CSV एक्सेल</button>
+                </div>
+            </div>
+
+            <div style="background:var(--color-surface-alt);padding:1.5rem;border-radius:var(--radius-lg);border:1px solid var(--color-border);margin-bottom:1.75rem;">
+                <h3 id="rep-title" style="margin-bottom:1rem;color:var(--color-primary-dark);">वार्षिक अहवाल तपशील</h3>
+                <div class="grid grid-2" style="margin-top:0.5rem;row-gap:0.75rem;">
+                    <div>
+                        <p style="margin-bottom:0.5rem;"><strong data-i18n="reports.lbl_name">शेतकरी नाव:</strong> <span id="rep-name">-</span></p>
+                        <p style="margin-bottom:0.5rem;"><strong data-i18n="reports.lbl_phone">मोबाईल क्रमांक:</strong> <span id="rep-phone">-</span></p>
+                        <p style="margin-bottom:0;"><strong data-i18n="reports.lbl_location">गाव / तालुका:</strong> <span id="rep-loc">-</span></p>
+                    </div>
+                    <div>
+                        <p style="margin-bottom:0.5rem;"><strong data-i18n="reports.lbl_rainfall">नोंदवलेला एकूण पाऊस:</strong> <span id="rep-rain">0 mm</span></p>
+                        <p style="margin-bottom:0.5rem;"><strong data-i18n="reports.lbl_harvested">एकूण पाणी साठवले:</strong> <span id="rep-harvest">0 L</span></p>
+                        <p style="margin-bottom:0;"><strong data-i18n="reports.lbl_used">एकूण पाणी वापर:</strong> <span id="rep-used">0 L</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-tile" style="text-align:center;">
+                <div class="stat-label" data-i18n="reports.lbl_reserve">सध्या शिल्लक पाणी साठा</div>
+                <div class="stat-value" id="rep-balance" style="font-size:2.4rem;color:var(--color-primary);margin:0.4rem 0;">0 L</div>
+                <div class="stat-sub" data-i18n="reports.sub_reserve">शेतातील सर्व टाक्यांमधील एकत्रित शिल्लक साठा</div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { t } from '/js/i18n.js';
+
+        const curYear = new Date().getFullYear();
+
+        async function loadReport() {
+            try {
+                const data = await api.get('/reports/yearly?year=' + curYear);
+                if (data) {
+                    const headingTemplate = t('reports.card_heading', '{year} मधील वार्षिक पाणी संवर्धन अहवाल');
+                    document.getElementById('rep-title').textContent = headingTemplate.replace('{year}', curYear);
+                    document.getElementById('rep-name').textContent = data.farmerName || '-';
+                    document.getElementById('rep-phone').textContent = data.phone || '-';
+                    const loc = [data.village, data.taluka, data.district].filter(Boolean).join(', ');
+                    document.getElementById('rep-loc').textContent = loc || '-';
+                    document.getElementById('rep-rain').textContent = `${data.totalRainfallMm} mm`;
+                    document.getElementById('rep-harvest').textContent = `${data.totalHarvestLitres.toLocaleString()} L`;
+                    document.getElementById('rep-used').textContent = `${data.totalWaterUsedLitres.toLocaleString()} L`;
+                    document.getElementById('rep-balance').textContent = `${data.netRemainingLitres.toLocaleString()} L`;
+                }
+            } catch (e) {
+                console.error('Failed to load report:', e);
+            }
+        }
+
+        document.getElementById('btn-export-pdf').onclick = () => {
+            const token = api.getToken();
+            const baseUrl = api.API_BASE || '/api';
+            fetch(`${baseUrl}/reports/export/pdf?year=${curYear}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `jalsathi-report-${curYear}.pdf`;
+                a.click();
+            });
+        };
+
+        document.getElementById('btn-export-csv').onclick = () => {
+            const token = api.getToken();
+            const baseUrl = api.API_BASE || '/api';
+            fetch(`${baseUrl}/reports/export/csv?year=${curYear}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `jalsathi-report-${curYear}.csv`;
+                a.click();
+            });
+        };
+
+        window.addEventListener('languageChange', loadReport);
+        loadReport();
+    </script>
+</body>
+</html>

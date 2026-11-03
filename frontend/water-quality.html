@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="wq.title">पाणी गुणवत्ता चाचणी व आरोग्य सल्ला</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card">
+            <h2 data-i18n="wq.title">पाणी गुणवत्ता चाचणी व आरोग्य सल्ला</h2>
+            <p style="color:var(--color-text-muted);" data-i18n="wq.subtitle">
+                भारतीय मानक ब्युरो (BIS IS 10500) मानकांनुसार आपल्या साठवलेल्या पाण्याची पिण्यायोग्य व शेतीसाठी तपासणी.
+            </p>
+
+            <form id="wq-form" class="grid grid-3" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label data-i18n="wq.ph_label">सामू (pH) [६.५ - ८.५ सुरक्षित]</label>
+                    <input type="number" step="0.1" id="wq-ph" placeholder="7.4">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="wq.tds_label">टीडीएस (mg/L) [< ५०० सुरक्षित]</label>
+                    <input type="number" step="1" id="wq-tds" placeholder="280">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="wq.turb_label">गढूळपणा (NTU) [< ५]</label>
+                    <input type="number" step="0.1" id="wq-turb" placeholder="1.2">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="wq.nitrate_label">नायट्रेट (mg/L) [< ४५]</label>
+                    <input type="number" step="0.1" id="wq-nitrate" placeholder="15.0">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label data-i18n="wq.coliform_label">जंतू संसर्ग आढळला का?</label>
+                    <select id="wq-coliform">
+                        <option value="false" selected data-i18n="wq.coliform_neg">नाही (सुरक्षित)</option>
+                        <option value="true" data-i18n="wq.coliform_pos">होय (दूषित)</option>
+                    </select>
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:50px;" data-i18n="wq.btn_check">
+                        पाण्याची गुणवत्ता तपासा
+                    </button>
+                </div>
+            </form>
+
+            <!-- Verdict Card -->
+            <div id="wq-result-card" style="display:none;margin-top:2rem;padding:1.5rem;background:var(--color-surface);border:2px solid var(--color-primary);border-radius:var(--radius-lg);">
+                <div class="grid grid-2" style="margin-bottom:1.5rem;">
+                    <div class="stat-tile" style="margin-bottom:0;">
+                        <div class="stat-label" data-i18n="wq.drinking">पिण्यासाठी योग्यता</div>
+                        <div class="stat-value" id="wq-res-drinking" style="font-size:1.4rem;">-</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="wq.drinking_sub">भारतीय मानक ब्यूरो नियम</div>
+                    </div>
+                    <div class="stat-tile" style="margin-bottom:0;border-left-color:var(--color-secondary);">
+                        <div class="stat-label" data-i18n="wq.irrigation">सिंचनासाठी योग्यता</div>
+                        <div class="stat-value" id="wq-res-irrigation" style="font-size:1.4rem;">-</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="wq.irrigation_sub">ठिबक व फवारणीसाठी योग्य</div>
+                    </div>
+                </div>
+
+                <h4 data-i18n="wq.safety_advice">शुद्धीकरण व सुरक्षा सल्ला</h4>
+                <ul id="wq-advice-list" style="padding-left:1.5rem;line-height:1.8;margin-top:0.5rem;"></ul>
+            </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="card">
+            <h3 data-i18n="wq.history_title">मागील पाणी चाचणी अहवाल</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="wq.th_date">तारीख</th>
+                            <th data-i18n="wq.th_ph">सामू (pH)</th>
+                            <th data-i18n="wq.th_tds">TDS (mg/L)</th>
+                            <th data-i18n="wq.th_drinking">पिण्यासाठी दर्जा</th>
+                            <th data-i18n="wq.th_irrigation">सिंचनासाठी दर्जा</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wq-history-tbody">
+                        <tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">लोड होत आहे...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage, t } from '/js/i18n.js';
+
+        function formatVerdict(v) {
+            const lang = getCurrentLanguage();
+            if (!v) return '-';
+            const s = v.toLowerCase();
+            if (lang === 'mr') {
+                if (s.includes('safe') || s.includes('सुरक्षित')) return 'सुरक्षित';
+                if (s.includes('boil') || s.includes('उकळून')) return 'उकळून पिण्यास योग्य';
+                if (s.includes('treat') || s.includes('प्रक्रिया')) return 'प्रक्रियेनंतर योग्य';
+                if (s.includes('unfit') || s.includes('अयोग्य') || s.includes('दूषित')) return 'पिण्यास अयोग्य';
+                if (s.includes('drip') || s.includes('ठिबक') || s.includes('irrigat')) return 'सिंचनासाठी योग्य';
+                return v.replace(/\([A-Za-z0-9\s-]+\)/g, '').trim();
+            } else {
+                if (s.includes('safe') || s.includes('सुरक्षित')) return 'Safe';
+                if (s.includes('boil') || s.includes('उकळून')) return 'Safe after Boiling';
+                if (s.includes('treat') || s.includes('प्रक्रिया')) return 'Safe after Treatment';
+                if (s.includes('unfit') || s.includes('अयोग्य') || s.includes('दूषित')) return 'Unfit for Drinking';
+                if (s.includes('drip') || s.includes('ठिबक') || s.includes('irrigat')) return 'Suitable for Irrigation';
+                return v.replace(/\([^)]*\)/g, '').trim();
+            }
+        }
+
+        document.getElementById('wq-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                ph: parseFloat(document.getElementById('wq-ph').value) || null,
+                tdsOrConductivity: parseFloat(document.getElementById('wq-tds').value) || null,
+                turbidity: parseFloat(document.getElementById('wq-turb').value) || null,
+                nitrate: parseFloat(document.getElementById('wq-nitrate').value) || null,
+                coliformPresent: document.getElementById('wq-coliform').value === 'true'
+            };
+
+            const res = await api.post('/water-quality/test', payload, false);
+            document.getElementById('wq-result-card').style.display = 'block';
+            document.getElementById('wq-res-drinking').textContent = formatVerdict(res.verdictDrinking);
+            document.getElementById('wq-res-irrigation').textContent = formatVerdict(res.verdictIrrigation);
+
+            const ul = document.getElementById('wq-advice-list');
+            ul.innerHTML = '';
+            (res.advice || []).forEach(adv => {
+                const li = document.createElement('li');
+                const isMr = getCurrentLanguage() === 'mr';
+                li.textContent = isMr ? adv : adv.replace(/\([^)]*\)/g, '').trim();
+                ul.appendChild(li);
+            });
+
+            document.getElementById('wq-result-card').scrollIntoView({ behavior: 'smooth' });
+            loadHistory();
+        };
+
+        async function loadHistory() {
+            const tbody = document.getElementById('wq-history-tbody');
+            if (!api.getToken()) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">${t('wq.empty_history', 'अद्याप कोणतीही चाचणी जतन नाही. (इतिहास पाहण्यासाठी कृपया लॉगिन करा)')}</td></tr>`;
+                return;
+            }
+            try {
+                const list = await api.get('/water-quality/history');
+                tbody.innerHTML = '';
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">${t('wq.empty_history', 'अद्याप कोणतीही चाचणी जतन नाही.')}</td></tr>`;
+                    return;
+                }
+                list.forEach(tItem => {
+                    const tr = document.createElement('tr');
+                    const isSafe = (tItem.verdictDrinking || '').toLowerCase().includes('safe');
+                    tr.innerHTML = `
+                        <td>${tItem.testDate}</td>
+                        <td>${tItem.ph || '-'}</td>
+                        <td>${tItem.tdsOrConductivity || '-'}</td>
+                        <td><span class="badge badge-${isSafe ? 'success' : 'danger'}">${formatVerdict(tItem.verdictDrinking)}</span></td>
+                        <td><span class="badge badge-success">${formatVerdict(tItem.verdictIrrigation)}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (ignored) {}
+        }
+
+        window.addEventListener('languageChange', loadHistory);
+        loadHistory();
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav.admin">प्रशासक नियंत्रण कक्ष</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 1100px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+            <div>
+                <h2 data-i18n="admin.title">प्रशासक नियंत्रण कक्ष (Admin Aggregate Dashboard)</h2>
+                <p style="color:var(--color-text-muted);margin:0;" data-i18n="admin.subtitle">सर्व शेतकरी, तालुकावार जलसंधारण अवलंब दर आणि एकत्रित संकलन</p>
+            </div>
+            <span class="badge badge-info" style="font-size:0.9rem;">DBIT Central Monitor</span>
+        </div>
+
+        <!-- 4 Aggregate Stat Tiles -->
+        <div class="grid grid-4" style="margin-bottom:2rem;">
+            <div class="stat-tile">
+                <div class="stat-label" data-i18n="admin.total_farmers">एकूण शेतकरी</div>
+                <div class="stat-value" id="adm-farmers">0</div>
+                <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="admin.reg_farmers">नोंदणीकृत शेतकरी</div>
+            </div>
+            <div class="stat-tile" style="border-left-color:var(--color-secondary);">
+                <div class="stat-label" data-i18n="admin.total_harvest">एकूण संकलित पाणी</div>
+                <div class="stat-value" id="adm-harvest">0 L</div>
+                <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="admin.harvest_est">एकत्रित अंदाज</div>
+            </div>
+            <div class="stat-tile" style="border-left-color:var(--color-accent);">
+                <div class="stat-label" data-i18n="admin.adoption">रचना अवलंब दर (Adoption)</div>
+                <div class="stat-value" id="adm-adoption">0%</div>
+                <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="admin.adoption_sub">शेततळे/टाकी असलेले शेतकरी</div>
+            </div>
+            <div class="stat-tile" style="border-left-color:var(--color-warning);">
+                <div class="stat-label" data-i18n="admin.total_tanks">नोंदवलेल्या टाक्या / तळी</div>
+                <div class="stat-value" id="adm-tanks">0</div>
+                <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="admin.active_tanks">सक्रिय पाणी साठे</div>
+            </div>
+        </div>
+
+        <!-- Taluka Charts Grid -->
+        <div class="grid grid-2" style="margin-bottom:2rem;">
+            <div class="card" style="margin-bottom:0;">
+                <h4 data-i18n="admin.taluka_dist">तालुकावार शेतकरी संख्या (Taluka Distribution)</h4>
+                <div style="position:relative;height:240px;margin-top:0.75rem;">
+                    <canvas id="talukaChart"></canvas>
+                </div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <h4 data-i18n="admin.adoption_rate">तालुकावार रचना अवलंब दर % (Adoption Rate)</h4>
+                <div style="position:relative;height:240px;margin-top:0.75rem;">
+                    <canvas id="adoptionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Searchable Farmers Table with Pagination -->
+        <div class="card">
+            <div class="card-header">
+                <h3 data-i18n="admin.farmers_dir">नोंदणीकृत शेतकरी यादी (Farmers Directory)</h3>
+                <div style="display:flex;gap:0.5rem;">
+                    <input type="text" id="adm-search-input" placeholder="नाव, फोन किंवा जिल्ह्याने शोधा..." style="min-height:38px;padding:0.4rem 0.75rem;font-size:0.9rem;" data-i18n-placeholder="admin.search_ph">
+                    <button class="btn btn-primary btn-sm" id="btn-adm-search" data-i18n="admin.btn_search">शोधा</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="admin.th_id">आयडी</th>
+                            <th data-i18n="admin.th_name">नाव</th>
+                            <th data-i18n="admin.th_phone">मोबाईल</th>
+                            <th data-i18n="admin.th_village">गाव</th>
+                            <th data-i18n="admin.th_taluka">तालुका</th>
+                            <th data-i18n="admin.th_district">जिल्हा</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adm-farmers-tbody">
+                        <tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);">लोड होत आहे...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;flex-wrap:wrap;gap:0.5rem;">
+                <span style="font-size:0.85rem;color:var(--color-text-muted);" id="pagination-info">पृष्ठ १</span>
+                <div style="display:flex;gap:0.5rem;">
+                    <button class="btn btn-secondary btn-sm" id="btn-page-prev">&larr; मागील</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-page-next">पुढील &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+
+        let talukaChart = null;
+        let adoptionChart = null;
+        let currentPage = 0;
+        let currentSearch = '';
+
+        async function initAdmin() {
+            const user = api.getCurrentUser();
+            if (!user || user.role !== 'ADMIN') {
+                api.showToast('प्रशासक अधिकार आवश्यक आहेत (Admin access only)', 'error');
+                setTimeout(() => window.location.href = '/login.html', 1000);
+                return;
+            }
+
+            await loadSummary();
+            await loadFarmers(0, '');
+        }
+
+        async function loadSummary() {
+            const data = await api.get('/admin/dashboard/summary');
+            if (data) {
+                document.getElementById('adm-farmers').textContent = data.totalFarmers;
+                document.getElementById('adm-harvest').textContent = (data.totalHarvestedLitres || 0).toLocaleString() + ' L';
+                document.getElementById('adm-adoption').textContent = data.adoptionRatePercent + '%';
+                document.getElementById('adm-tanks').textContent = data.totalTanks;
+
+                // Render Taluka Counts Chart
+                const counts = data.talukaFarmerCounts || {};
+                const ctx1 = document.getElementById('talukaChart').getContext('2d');
+                if (talukaChart) talukaChart.destroy();
+                talukaChart = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(counts),
+                        datasets: [{
+                            label: 'शेतकरी संख्या',
+                            data: Object.values(counts),
+                            backgroundColor: '#0B6E99',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                // Render Adoption Chart
+                const adoptions = data.talukaAdoptionRates || {};
+                const ctx2 = document.getElementById('adoptionChart').getContext('2d');
+                if (adoptionChart) adoptionChart.destroy();
+                adoptionChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(adoptions),
+                        datasets: [{
+                            label: 'रचना अवलंब दर %',
+                            data: Object.values(adoptions),
+                            backgroundColor: '#4CAF50',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { max: 100, min: 0 } }
+                    }
+                });
+            }
+        }
+
+        async function loadFarmers(page, search) {
+            currentPage = page;
+            currentSearch = search;
+            const res = await api.get(`/admin/farmers?search=${encodeURIComponent(search)}&page=${page}&size=6`);
+            const tbody = document.getElementById('adm-farmers-tbody');
+            tbody.innerHTML = '';
+
+            const list = res ? res.content : [];
+            if (!list || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);">कोणताही शेतकरी आढळला नाही.</td></tr>';
+                return;
+            }
+
+            list.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${u.id}</td>
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.phone}</td>
+                    <td>${u.village || '-'}</td>
+                    <td>${u.taluka || '-'}</td>
+                    <td>${u.district || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('pagination-info').textContent = `पृष्ठ ${currentPage + 1} / ${res.totalPages || 1} (एकूण ${res.totalElements || list.length} शेतकरी)`;
+            document.getElementById('btn-page-prev').disabled = (currentPage === 0);
+            document.getElementById('btn-page-next').disabled = (currentPage >= (res.totalPages - 1));
+        }
+
+        document.getElementById('btn-adm-search').onclick = () => {
+            const val = document.getElementById('adm-search-input').value.trim();
+            loadFarmers(0, val);
+        };
+
+        document.getElementById('btn-page-prev').onclick = () => {
+            if (currentPage > 0) loadFarmers(currentPage - 1, currentSearch);
+        };
+
+        document.getElementById('btn-page-next').onclick = () => {
+            loadFarmers(currentPage + 1, currentSearch);
+        };
+
+        initAdmin();
+    </script>
+</body>
+</html>

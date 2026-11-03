@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="learning.title">ज्ञान व मार्गदर्शन - जलसाथी</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 1060px; margin-top: 2rem; margin-bottom: 3.5rem;">
+        <div style="text-align:center;margin-bottom:2.25rem;">
+            <div style="font-size:3rem;margin-bottom:0.25rem;">📚</div>
+            <h2 data-i18n="learning.title" style="margin-bottom:0.4rem;">शेतकरी ज्ञान व मार्गदर्शन केंद्र</h2>
+            <p data-i18n="learning.subtitle" style="color:var(--color-text-muted);max-width:750px;margin:0 auto;font-size:0.95rem;">
+                शेततळे, जलकुंड, छतावरील पाणी संकलन आणि सेंद्रिय आच्छादनाबाबत सचित्र मार्गदर्शक पुस्तिका.
+            </p>
+        </div>
+
+        <!-- Filter Buttons (Zero Hybrid Text) -->
+        <div style="display:flex;justify-content:center;gap:0.65rem;flex-wrap:wrap;margin-bottom:2rem;">
+            <button class="btn btn-primary btn-sm filter-btn" data-cat="" data-i18n="learning.tab_all">सर्व मार्गदर्शक</button>
+            <button class="btn btn-secondary btn-sm filter-btn" data-cat="STRUCTURE" data-i18n="learning.tab_structure">रचना निर्मिती</button>
+            <button class="btn btn-secondary btn-sm filter-btn" data-cat="MAINTENANCE" data-i18n="learning.tab_maint">देखभाल</button>
+            <button class="btn btn-secondary btn-sm filter-btn" data-cat="SOIL" data-i18n="learning.tab_soil">माती व ओलावा</button>
+        </div>
+
+        <div id="guides-grid" class="grid grid-2">
+            <!-- Dynamically loaded guides -->
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage, t } from '/js/i18n.js';
+
+        let currentCat = '';
+
+        async function loadGuides(cat = '') {
+            currentCat = cat;
+            const url = cat ? `/learning?category=${cat}` : '/learning';
+            try {
+                const list = await api.get(url, false);
+                const grid = document.getElementById('guides-grid');
+                grid.innerHTML = '';
+                const isMr = getCurrentLanguage() === 'mr';
+
+                if (!list || list.length === 0) {
+                    grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;color:var(--color-text-muted);padding:2rem;">${t('learning.empty', 'या वर्गात अद्याप मार्गदर्शक उपलब्ध नाही.')}</div>`;
+                    return;
+                }
+
+                list.forEach(g => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    const title = (isMr ? g.titleMr : g.titleEn) || g.titleMr || g.titleEn;
+                    const body = (isMr ? g.bodyMr : g.bodyEn) || g.bodyMr || g.bodyEn;
+                    const suitLabel = t('learning.suitability', 'उपयुक्तता:');
+
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h4 style="margin:0;font-size:1.1rem;color:var(--color-text);">${title}</h4>
+                            <span class="badge badge-info">${g.category}</span>
+                        </div>
+                        <p style="font-size:0.92rem;line-height:1.7;color:var(--color-text-secondary);margin:0;">
+                            ${body}
+                        </p>
+                        ${g.targetSituation ? `<div style="font-size:0.82rem;color:var(--color-primary-dark);background:var(--color-surface-alt);padding:0.5rem 0.85rem;border-radius:var(--radius-sm);margin-top:1rem;border:1px solid var(--color-border);"><strong>${suitLabel}</strong> ${g.targetSituation}</div>` : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error('Failed to load guides:', err);
+            }
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.className = 'btn btn-secondary btn-sm filter-btn');
+                btn.className = 'btn btn-primary btn-sm filter-btn';
+                loadGuides(btn.dataset.cat);
+            };
+        });
+
+        window.addEventListener('languageChange', () => loadGuides(currentCat));
+        loadGuides();
+    </script>
+</body>
+</html>

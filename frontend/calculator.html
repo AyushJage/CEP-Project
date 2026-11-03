@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="calc.title">पावसाचे पाणी साठवण क्षमता कॅल्क्युलेटर</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card">
+            <h2 data-i18n="calc.title">पावसाचे पाणी साठवण क्षमता कॅल्क्युलेटर</h2>
+            <p style="color:var(--color-text-muted);" data-i18n="calc.subtitle">
+                आपल्या शेतावर, अंगणावर किंवा घराच्या छतावर किती लिटर पावसाचे पाणी साठवता येईल याची अचूक गणना करा.
+            </p>
+
+            <form id="calc-form" style="margin-top: 1.5rem;">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label data-i18n="calc.lbl_district">जिल्ह्याची सरासरी पावसाची नोंद वापरा (स्वयंचलित)</label>
+                        <select id="district-select">
+                            <option value="" data-i18n="calc.opt_select_district">जिल्हा निवडा (स्वयंचलित)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="calc.lbl_rainfall">पावसाचे प्रमाण (मि.मी.)</label>
+                        <input type="number" step="0.1" id="rainfall-mm" data-i18n-placeholder="calc.ph_rainfall" placeholder="उदा. ७५०" required min="1">
+                    </div>
+                </div>
+
+                <!-- Catchment Area Input with Local Unit Converter -->
+                <div class="card" style="background:var(--color-surface-alt);padding:1.25rem;">
+                    <label style="font-size:1.05rem;" data-i18n="calc.card_catchment">पाणलोट क्षेत्रफळ</label>
+                    <div class="grid grid-2" style="margin-top:0.5rem;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label data-i18n="calc.lbl_unit">एकक निवडा</label>
+                            <select id="area-unit">
+                                <option value="guntha" data-i18n="calc.unit_guntha">गुंठा [१ एकर = ४० गुंठे]</option>
+                                <option value="acre" data-i18n="calc.unit_acre">एकर</option>
+                                <option value="hectare" data-i18n="calc.unit_hectare">हेक्टर</option>
+                                <option value="sqm" selected data-i18n="calc.unit_sqm">चौरस मीटर</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label data-i18n="calc.lbl_area_val">क्षेत्रफळ संख्या</label>
+                            <input type="number" step="0.01" id="area-input" data-i18n-placeholder="calc.ph_area_val" placeholder="उदा. २०० (छत) किंवा ५ (एकर)" required min="0.1">
+                        </div>
+                    </div>
+                    <div style="margin-top:0.5rem;font-size:0.85rem;color:var(--color-primary-dark);">
+                        <span data-i18n="calc.converted_prefix">रूपांतरित क्षेत्रफळ:</span> <strong id="converted-sqm">0</strong> <span data-i18n="calc.sqm_unit">चौरस मीटर</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="calc.lbl_surface">जमीन किंवा छताचा प्रकार</label>
+                    <select id="surface-select" required>
+                        <option value="Roof/concrete" data-i18n="calc.surf_roof">छत किंवा सिमेंट [अपधाव गुणांक: ०.८५]</option>
+                        <option value="Compacted soil" data-i18n="calc.surf_soil">अंगण किंवा मातीचा रस्ता [गुणांक: ०.६०]</option>
+                        <option value="Farmland/cropped" selected data-i18n="calc.surf_farm">पीक शेतजमीन [गुणांक: ०.४०]</option>
+                        <option value="Grassland" data-i18n="calc.surf_grass">कुरण जमीन [गुणांक: ०.३०]</option>
+                        <option value="Forest/vegetated" data-i18n="calc.surf_forest">झाडांची जमीन [गुणांक: ०.२०]</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; min-height: 52px; font-size: 1.1rem;" data-i18n="calc.btn_calculate">
+                    साठवण क्षमता मोजा
+                </button>
+            </form>
+
+            <!-- Results Card -->
+            <div id="result-box" style="display:none; margin-top: 2rem; padding: 1.5rem; background: var(--color-success-bg); border-radius: var(--radius-lg); border: 2px solid var(--color-success);">
+                <h3 style="color:var(--color-success); margin-bottom: 1rem;" data-i18n="calc.res_heading">✅ साठवणूक अंदाज निष्कर्ष</h3>
+                
+                <div class="grid grid-3" style="text-align:center;">
+                    <div class="stat-tile">
+                        <div class="stat-label" data-i18n="calc.res_tile_litres">एकूण साठवणारे पाणी</div>
+                        <div class="stat-value" id="res-litres" style="color:var(--color-success);">0 L</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="calc.res_sub_litres">लिटर</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label" data-i18n="calc.res_tile_cubic">घनमीटर मध्ये</div>
+                        <div class="stat-value" id="res-cubic">0 m³</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="calc.res_sub_cubic">१ घनमीटर = १००० लिटर</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label" data-i18n="calc.res_tile_tanks">१०००-लिटर टाक्या</div>
+                        <div class="stat-value" id="res-tanks">0</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);" data-i18n="calc.res_sub_tanks">टाक्या भरतील</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem; padding: 0.75rem; background: var(--color-surface); border-radius: var(--radius-sm); font-size: 0.9rem;">
+                    <strong data-i18n="calc.lbl_formula">सूत्र:</strong> <span id="formula-breakdown">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="card">
+            <h3 data-i18n="calc.history_title">मागील केलेल्या गणनेचा इतिहास</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n="calc.th_area">क्षेत्रफळ (चौ.मी.)</th>
+                            <th data-i18n="calc.th_rain">पाऊस (मि.मी.)</th>
+                            <th data-i18n="calc.th_surface">जमीन प्रकार</th>
+                            <th data-i18n="calc.th_litres">साठवणारे पाणी (लिटर)</th>
+                            <th data-i18n="calc.th_tanks">टाक्या</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-tbody">
+                        <tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { t, getCurrentLanguage, translateDOM } from '/js/i18n.js';
+
+        let districtNormals = [];
+
+        function formatSurfaceName(surf) {
+            const lang = getCurrentLanguage();
+            const s = (surf || '').toLowerCase();
+            if (lang === 'mr') {
+                if (s.includes('roof') || s.includes('concrete') || s.includes('छत')) return 'छत / सिमेंट';
+                if (s.includes('compact') || s.includes('soil') || s.includes('अंगण')) return 'अंगण / माती';
+                if (s.includes('farm') || s.includes('crop') || s.includes('पीक') || s.includes('शेत')) return 'पीक शेतजमीन';
+                if (s.includes('grass') || s.includes('कुरण')) return 'कुरण जमीन';
+                if (s.includes('forest') || s.includes('vegetat') || s.includes('झाड')) return 'झाडांची जमीन';
+                return surf;
+            } else {
+                if (s.includes('roof') || s.includes('concrete') || s.includes('छत')) return 'Rooftop / Concrete';
+                if (s.includes('compact') || s.includes('soil') || s.includes('अंगण')) return 'Compacted Soil / Courtyard';
+                if (s.includes('farm') || s.includes('crop') || s.includes('पीक') || s.includes('शेत')) return 'Cropped Farmland';
+                if (s.includes('grass') || s.includes('कुरण')) return 'Grassland';
+                if (s.includes('forest') || s.includes('vegetat') || s.includes('झाड')) return 'Vegetated / Forest Land';
+                return surf;
+            }
+        }
+
+        // Conversion helper
+        function calculateSqm() {
+            const val = parseFloat(document.getElementById('area-input').value) || 0;
+            const unit = document.getElementById('area-unit').value;
+            let factor = 1.0;
+            if (unit === 'guntha') factor = 101.17;
+            else if (unit === 'acre') factor = 4046.86;
+            else if (unit === 'hectare') factor = 10000.0;
+
+            const sqm = (val * factor);
+            document.getElementById('converted-sqm').textContent = sqm.toLocaleString('en-IN', {maximumFractionDigits: 1});
+            return sqm;
+        }
+
+        document.getElementById('area-input').addEventListener('input', calculateSqm);
+        document.getElementById('area-unit').addEventListener('change', calculateSqm);
+
+        // Load district normals for 1-click auto-fill
+        api.get('/meta/district-normals', false).then(normals => {
+            districtNormals = normals || [];
+            const select = document.getElementById('district-select');
+            const annualLabel = t('calc.annual_normal', 'वार्षिक सरासरी:');
+            districtNormals.forEach(n => {
+                const opt = document.createElement('option');
+                opt.value = n.district;
+                opt.textContent = `${n.district} (${annualLabel} ${n.annualMm} mm)`;
+                select.appendChild(opt);
+            });
+        });
+
+        document.getElementById('district-select').addEventListener('change', (e) => {
+            const d = districtNormals.find(n => n.district === e.target.value);
+            if (d && d.annualMm) {
+                document.getElementById('rainfall-mm').value = d.annualMm;
+                const toastMsg = getCurrentLanguage() === 'en' 
+                    ? `Auto-filled ${d.district} annual normal rainfall (${d.annualMm} mm)`
+                    : `${d.district} जिल्ह्याचा वार्षिक पाऊस (${d.annualMm} मि.मी.) भरला गेला`;
+                api.showToast(toastMsg, 'info');
+            }
+        });
+
+        // Form Submit
+        document.getElementById('calc-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const sqm = calculateSqm();
+            if (sqm <= 0) {
+                const errMsg = getCurrentLanguage() === 'en' ? 'Please enter a valid area' : 'कृपया वैध क्षेत्रफळ प्रविष्ट करा';
+                api.showToast(errMsg, 'error');
+                return;
+            }
+
+            const payload = {
+                catchmentAreaSqm: sqm,
+                rainfallMm: parseFloat(document.getElementById('rainfall-mm').value),
+                surfaceType: document.getElementById('surface-select').value
+            };
+
+            try {
+                const res = await api.post('/harvest/calculate', payload, false);
+                document.getElementById('result-box').style.display = 'block';
+                document.getElementById('res-litres').textContent = res.harvestedLitres.toLocaleString('en-IN') + ' L';
+                document.getElementById('res-cubic').textContent = res.harvestedCubicMetres.toLocaleString('en-IN') + ' m³';
+                document.getElementById('res-tanks').textContent = res.thousandLitreTanksFilled.toLocaleString('en-IN');
+                document.getElementById('formula-breakdown').textContent = 
+                    `${res.catchmentAreaSqm} m² × ${res.rainfallMm} mm × ${res.runoffCoefficient} = ${res.harvestedLitres.toLocaleString()} L`;
+
+                document.getElementById('result-box').scrollIntoView({ behavior: 'smooth' });
+                loadHistory();
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        async function loadHistory() {
+            const tbody = document.getElementById('history-tbody');
+            if (!api.getToken()) {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">${t('calc.no_history', 'कोणतीही मागील नोंद नाही. (इतिहास पाहण्यासाठी कृपया लॉगिन करा)')}</td></tr>`;
+                return;
+            }
+            try {
+                const list = await api.get('/harvest/history');
+                tbody.innerHTML = '';
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">${t('calc.no_history', 'कोणतीही मागील नोंद नाही.')}</td></tr>`;
+                    return;
+                }
+                list.slice(0, 10).forEach(h => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${h.catchmentAreaSqm} m²</td>
+                        <td>${h.rainfallMm} mm</td>
+                        <td>${formatSurfaceName(h.surfaceType)}</td>
+                        <td><strong>${h.harvestedLitres.toLocaleString()} L</strong></td>
+                        <td>${h.thousandLitreTanksFilled}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (ignored) {}
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="register.title">नवीन शेतकरी नोंदणी</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 600px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card" style="padding: 2.25rem;">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <h2 data-i18n="register.title">नवीन शेतकरी नोंदणी</h2>
+                <p style="color: var(--color-text-muted); font-size: 0.9rem;">विनामूल्य खाते तयार करा व शेताचे पाणी नियोजन सुरू करा</p>
+            </div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label data-i18n="register.name">पूर्ण नाव</label>
+                    <input type="text" id="name" placeholder="उदा. विष्णू तुकाराम पाटील" required>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label data-i18n="register.phone">१० अंकी मोबाईल क्रमांक</label>
+                        <input type="text" id="phone" placeholder="उदा. 9876543210" maxlength="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="register.password">पासवर्ड</label>
+                        <input type="password" id="password" placeholder="किमान ६ अक्षरे" required minlength="6">
+                    </div>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label data-i18n="register.district">जिल्हा</label>
+                        <select id="district" required>
+                            <option value="" data-i18n="register.district_placeholder">जिल्हा निवडा</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="register.taluka">तालुका</label>
+                        <input type="text" id="taluka" placeholder="उदा. शिरूर" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="register.village">गाव</label>
+                        <input type="text" id="village" placeholder="उदा. रांजणगाव" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="register.language">प्राधान्य भाषा</label>
+                    <select id="language">
+                        <option value="mr" selected>मराठी</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" data-i18n="register.submit">
+                    नोंदणी पूर्ण करा
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem; font-size: 0.95rem;">
+                <a href="/login.html" data-i18n="register.have_account">आधीच खाते आहे? लॉगिन करा</a>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+
+        // Load districts dropdown
+        api.get('/meta/options', false).then(res => {
+            const select = document.getElementById('district');
+            if (res && res.districts) {
+                res.districts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    select.appendChild(opt);
+                });
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                password: document.getElementById('password').value,
+                district: document.getElementById('district').value,
+                taluka: document.getElementById('taluka').value.trim(),
+                village: document.getElementById('village').value.trim(),
+                language: document.getElementById('language').value
+            };
+
+            try {
+                const res = await api.post('/auth/register', payload, false);
+                api.setToken(res.token);
+                api.setCurrentUser(res.user);
+                api.showToast('नोंदणी यशस्वी झाली! (Registration complete)', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 700);
+            } catch (err) {
+                // handled by api.js toast
+            }
+        });
+    </script>
+</body>
+</html>

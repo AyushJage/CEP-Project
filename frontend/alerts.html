@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav.alerts">सूचना व देखभाल आठवणी</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card">
+            <h2 data-i18n="alerts.page_title">सूचना व देखभाल आठवणी</h2>
+            <p style="color:var(--color-text-muted);" data-i18n="alerts.subtitle">
+                पाणी साठा पातळी, आगामी मान्सूनपूर्व कामांची यादी आणि सुरक्षिततेचे इशारे.
+            </p>
+
+            <div class="grid grid-2" style="margin-top: 1.5rem;">
+                <!-- Alerts Column -->
+                <div>
+                    <h3 data-i18n="alerts.recent">🔔 ताज्या सूचना</h3>
+                    <div id="alerts-list" style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+                        <p style="color:var(--color-text-muted);">...</p>
+                    </div>
+                </div>
+
+                <!-- Maintenance Checklist Column -->
+                <div>
+                    <h3 data-i18n="alerts.maintenance">🛠️ नियतकालिक देखभाल यादी</h3>
+                    <div id="tasks-list" style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+                        <p style="color:var(--color-text-muted);">...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { t, getCurrentLanguage } from '/js/i18n.js';
+
+        async function loadData() {
+            const lang = getCurrentLanguage();
+            const alerts = await api.get('/alerts');
+            const aList = document.getElementById('alerts-list');
+            aList.innerHTML = '';
+            if (!alerts || alerts.length === 0) {
+                aList.innerHTML = `<p style="color:var(--color-text-muted);">${t('alerts.empty_alerts', 'कोणत्याही प्रलंबित सूचना नाहीत.')}</p>`;
+            } else {
+                alerts.forEach(a => {
+                    const isLow = a.type === 'LOW_TANK';
+                    const alertTitle = isLow 
+                        ? (lang === 'en' ? '⚠️ Water Level Critical' : '⚠️ पाणी पातळी धोक्याची पातळी') 
+                        : (lang === 'en' ? '🔔 Advisory Notice' : '🔔 सूचना');
+                    const defaultMsg = isLow 
+                        ? (lang === 'en' ? 'Tank water level dropped below 20% capacity.' : 'टाकीतील पाणी पातळी २०% च्या खाली गेली आहे.')
+                        : '';
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.style.cssText = `margin-bottom:0;padding:1rem;border-left:5px solid ${a.isRead ? 'var(--color-border)' : 'var(--color-danger)'};`;
+                    div.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                            <div>
+                                <strong>${alertTitle}</strong>
+                                <p style="margin:0.25rem 0 0 0;font-size:0.9rem;">${a.messageParams || defaultMsg}</p>
+                                <span style="font-size:0.75rem;color:var(--color-text-muted);">${a.createdAt ? a.createdAt.substring(0,10) : ''}</span>
+                            </div>
+                            ${!a.isRead ? `<button class="btn btn-secondary btn-sm mark-read-btn" data-id="${a.id}">${t('alerts.read', 'वाचले')}</button>` : `<span class="badge badge-success">${t('alerts.read_done', 'वाचले')}</span>`}
+                        </div>
+                    `;
+                    aList.appendChild(div);
+                });
+
+                aList.querySelectorAll('.mark-read-btn').forEach(btn => {
+                    btn.onclick = async () => {
+                        await api.patch(`/alerts/${btn.dataset.id}/read`);
+                        const toast = lang === 'en' ? 'Alert marked as read' : 'सूचना वाचली म्हणून नोंदवली';
+                        api.showToast(toast, 'info');
+                        loadData();
+                    };
+                });
+            }
+
+            const tasks = await api.get('/maintenance');
+            const tList = document.getElementById('tasks-list');
+            tList.innerHTML = '';
+            if (!tasks || tasks.length === 0) {
+                tList.innerHTML = `<p style="color:var(--color-text-muted);">${t('alerts.empty_tasks', 'कोणतीही प्रलंबित कामे नाहीत.')}</p>`;
+            } else {
+                tasks.forEach(tItem => {
+                    const isDone = tItem.status === 'DONE';
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.style.cssText = `margin-bottom:0;padding:1rem;border-left:5px solid ${isDone ? 'var(--color-accent)' : 'var(--color-warning)'};`;
+                    const tankLbl = lang === 'en' ? 'Tank:' : 'टाकी:';
+                    const dueLbl = lang === 'en' ? 'Due:' : 'मुदत:';
+                    div.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <strong>${tItem.titleKey}</strong>
+                                <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--color-text-muted);">${tankLbl} ${tItem.tankName || '-'} | ${dueLbl} ${tItem.dueDate || '-'}</p>
+                            </div>
+                            ${!isDone ? `<button class="btn btn-primary btn-sm mark-done-btn" data-id="${tItem.id}">${t('alerts.mark_done', 'पूर्ण झाले ✓')}</button>` : `<span class="badge badge-success">${t('alerts.done', 'पूर्ण ✓')}</span>`}
+                        </div>
+                    `;
+                    tList.appendChild(div);
+                });
+
+                tList.querySelectorAll('.mark-done-btn').forEach(btn => {
+                    btn.onclick = async () => {
+                        await api.patch(`/maintenance/${btn.dataset.id}/done`);
+                        const toast = lang === 'en' ? 'Task marked as completed!' : 'काम पूर्ण झाले म्हणून चिन्हांकित केले!';
+                        api.showToast(toast, 'success');
+                        loadData();
+                    };
+                });
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

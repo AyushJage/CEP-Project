@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav.assist">फील्ड वर्कर सहाय्यक विझार्ड</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 800px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <div>
+                    <h2 data-i18n="assist.title">🌾 फील्ड असिस्ट विझार्ड (Assisted Entry)</h2>
+                    <p style="color:var(--color-text-muted);margin:0;" data-i18n="assist.subtitle">कमी साक्षरता असलेल्या शेतकऱ्यांसाठी टप्प्याटप्प्याने डेटा नोंदणी</p>
+                </div>
+                <span class="badge badge-info" data-i18n="assist.badge">कृषी मित्र मोड</span>
+            </div>
+
+            <!-- Stepper -->
+            <div class="wizard-stepper">
+                <div class="step-node active" id="node-1">१</div>
+                <div class="step-node" id="node-2">२</div>
+                <div class="step-node" id="node-3">३</div>
+            </div>
+
+            <!-- Step 1: Farmer Selection / Registration -->
+            <div id="step-1" class="wizard-step">
+                <h3>पायरी १: शेतकरी निवड किंवा नवीन नोंदणी</h3>
+                <div class="grid grid-2" style="margin:1rem 0;">
+                    <div class="form-group">
+                        <label>मोबाईल क्रमांकाने शोधा</label>
+                        <input type="text" id="as-search-phone" placeholder="उदा. 7777777701" maxlength="10">
+                    </div>
+                    <div style="align-self:flex-end;margin-bottom:1.25rem;">
+                        <button type="button" class="btn btn-secondary" id="btn-as-search" style="width:100%;">शेतकरी शोधा</button>
+                    </div>
+                </div>
+
+                <div id="farmer-found-box" style="display:none;padding:1rem;background:var(--color-success-bg);border-radius:var(--radius-md);margin-bottom:1.5rem;">
+                    <strong>शेतकरी आढळले:</strong> <span id="as-found-name"></span> (<span id="as-found-loc"></span>)
+                </div>
+
+                <hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--color-border);">
+
+                <h4>किंवा नवीन शेतकरी त्वरित नोंदणी करा</h4>
+                <div class="grid grid-2" style="margin-top:0.75rem;">
+                    <div class="form-group">
+                        <label>पूर्ण नाव</label>
+                        <input type="text" id="as-new-name" placeholder="उदा. रामदास जाधव">
+                    </div>
+                    <div class="form-group">
+                        <label>मोबाईल क्रमांक</label>
+                        <input type="text" id="as-new-phone" placeholder="उदा. 9811223344" maxlength="10">
+                    </div>
+                    <div class="form-group">
+                        <label>गाव</label>
+                        <input type="text" id="as-new-village" placeholder="उदा. उरळी">
+                    </div>
+                    <div class="form-group">
+                        <label>जिल्हा</label>
+                        <select id="as-new-district">
+                            <option value="Pune" selected>Pune (पुणे)</option>
+                            <option value="Nagpur">Nagpur (नागपूर)</option>
+                            <option value="Latur">Latur (लातूर)</option>
+                            <option value="Jalna">Jalna (जालना)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="text-align:right;margin-top:1rem;">
+                    <button type="button" class="btn btn-primary" id="btn-next-1">पुढील पायरी &rarr;</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Land & Catchment Area -->
+            <div id="step-2" class="wizard-step" style="display:none;">
+                <h3>पायरी २: शेतजमीन व पाणलोट माहिती</h3>
+                <div class="grid grid-2" style="margin-top:1rem;">
+                    <div class="form-group">
+                        <label>एकूण जमीन (एकर मध्ये)</label>
+                        <input type="number" id="as-land-acre" placeholder="उदा. 2.5" step="0.1" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label>सिंचन पद्धत (Irrigation)</label>
+                        <select id="as-irrigation">
+                            <option value="Rain-fed" selected>कोरडवाहू (केवळ पाऊस)</option>
+                            <option value="Well">विहीर</option>
+                            <option value="Borewell">बोअरवेल</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>मातीचा प्रकार</label>
+                        <select id="as-soil">
+                            <option value="Black (Regur)" selected>काळी कसदार</option>
+                            <option value="Red">तांबडी माती</option>
+                            <option value="Loamy">पोयट्याची</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>मुख्य पीक</label>
+                        <input type="text" id="as-crop" placeholder="उदा. सोयाबीन, कापूस" value="सोयाबीन">
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+                    <button type="button" class="btn btn-secondary" id="btn-prev-2">&larr; मागे जा</button>
+                    <button type="button" class="btn btn-primary" id="btn-next-2">पुढील पायरी &rarr;</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Current Structures & Immediate Recommendation -->
+            <div id="step-3" class="wizard-step" style="display:none;">
+                <h3>पायरी ३: विद्यमान रचना व तातडीची कृती</h3>
+                <div class="form-group" style="margin-top:1rem;">
+                    <label>सध्या शेतात पाण्याची रचना आहे का?</label>
+                    <select id="as-structure">
+                        <option value="None" selected>नाही (कोणतीही नाही - ६७% सर्वेक्षण वास्तव)</option>
+                        <option value="Farm pond">शेततळे आहे</option>
+                        <option value="Storage tank">टाकी आहे</option>
+                    </select>
+                </div>
+
+                <div id="as-summary-result" style="padding:1.5rem;background:var(--color-surface-alt);border-radius:var(--radius-md);margin-top:1.5rem;">
+                    <h4 style="color:var(--color-primary-dark);">🎯 या शेतकऱ्यासाठी त्वरित शिफारस:</h4>
+                    <p id="as-rec-text" style="font-size:1.05rem;font-weight:700;margin:0.5rem 0;">
+                        लहान शेतीसाठी (< २ एकर) कमी खर्चाचे प्लास्टिक अस्तरीकरण असलेले जलकुंड (Jalkund) किंवा पुनर्भरणाचा खड्डा.
+                    </p>
+                    <p style="font-size:0.9rem;color:var(--color-text-muted);margin:0;">
+                        अंदाजे खर्च: ₹४,००० ते ₹८,००० | श्रमदानातून किंवा मागेल त्याला शेततळे योजनेतून उभारणी शक्य.
+                    </p>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+                    <button type="button" class="btn btn-secondary" id="btn-prev-3">&larr; मागे जा</button>
+                    <button type="button" class="btn btn-primary" id="btn-finish-assist">नोंदणी व शिफारस जतन करा ✓</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+
+        let selectedFarmer = null;
+
+        // Step 1 Search
+        document.getElementById('btn-as-search').onclick = async () => {
+            const phone = document.getElementById('as-search-phone').value.trim();
+            if (!phone) return;
+            try {
+                const res = await api.get('/assist/farmer-lookup?phone=' + phone);
+                selectedFarmer = res;
+                document.getElementById('farmer-found-box').style.display = 'block';
+                document.getElementById('as-found-name').textContent = res.name;
+                document.getElementById('as-found-loc').textContent = `${res.village || ''}, ${res.district || ''}`;
+                api.showToast('शेतकरी सापडले!', 'success');
+            } catch (err) {}
+        };
+
+        // Stepper Navigation
+        document.getElementById('btn-next-1').onclick = async () => {
+            if (!selectedFarmer) {
+                const newName = document.getElementById('as-new-name').value.trim();
+                const newPhone = document.getElementById('as-new-phone').value.trim();
+                if (newName && newPhone) {
+                    try {
+                        const regPayload = {
+                            name: newName,
+                            phone: newPhone,
+                            password: 'farmer' + newPhone.slice(-4),
+                            village: document.getElementById('as-new-village').value.trim(),
+                            district: document.getElementById('as-new-district').value,
+                            taluka: 'Taluka'
+                        };
+                        selectedFarmer = await api.post('/assist/farmers', regPayload);
+                        api.showToast('नवीन शेतकरी नोंदणी झाली!', 'success');
+                    } catch (e) { return; }
+                } else {
+                    api.showToast('कृपया शेतकरी निवडा किंवा नवीन नोंदणी करा', 'error');
+                    return;
+                }
+            }
+
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+            document.getElementById('node-1').className = 'step-node completed';
+            document.getElementById('node-2').className = 'step-node active';
+        };
+
+        document.getElementById('btn-prev-2').onclick = () => {
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+            document.getElementById('node-2').className = 'step-node';
+            document.getElementById('node-1').className = 'step-node active';
+        };
+
+        document.getElementById('btn-next-2').onclick = () => {
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-3').style.display = 'block';
+            document.getElementById('node-2').className = 'step-node completed';
+            document.getElementById('node-3').className = 'step-node active';
+        };
+
+        document.getElementById('btn-prev-3').onclick = () => {
+            document.getElementById('step-3').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+            document.getElementById('node-3').className = 'step-node';
+            document.getElementById('node-2').className = 'step-node active';
+        };
+
+        document.getElementById('btn-finish-assist').onclick = () => {
+            api.showToast('शेतकरी डेटा व शिफारस यशस्वीरित्या पूर्ण झाली!', 'success');
+            setTimeout(() => {
+                window.location.href = '/dashboard.html';
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

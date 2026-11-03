@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>मार्गदर्शक पुस्तिका | Learning Guide Reader</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .step-box {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .material-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #ddd;
+    }
+    @media print {
+      #navbar-placeholder, .no-print {
+        display: none !important;
+      }
+      .page-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <main class="page-container" style="max-width: 850px; margin: 2rem auto; padding: 0 1rem 5rem 1rem;">
+    <!-- Top Action Bar -->
+    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <a href="learning.html" class="btn btn-outline" data-i18n="back_to_guides">← सर्व मार्गदर्शिका (All Guides)</a>
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-secondary" onclick="window.print()" data-i18n="print_guide">🖨️ मुद्रित करा (Print)</button>
+        <button class="btn btn-outline" onclick="shareGuide()" data-i18n="share_guide">📤 सामायिक करा (Share)</button>
+      </div>
+    </div>
+
+    <!-- Guide Content Container -->
+    <article class="card" id="guideArticle" style="padding: 2rem; border-top: 6px solid var(--color-primary);">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <span class="badge" id="guideCategoryBadge" style="background: #e0f2f1; color: var(--color-primary); font-weight: bold; padding: 0.25rem 0.6rem; border-radius: 4px;">जलसंधारण</span>
+          <span class="badge" id="guideSituationBadge" style="background: #fff3e0; color: #e65100; padding: 0.25rem 0.6rem; border-radius: 4px;">कोरडवाहू शेती</span>
+        </div>
+        <h1 id="guideTitle" style="color: var(--color-primary); margin: 0.5rem 0; font-size: 1.8rem; line-height: 1.3;">
+          मार्गदर्शक लोड होत आहे...
+        </h1>
+        <p id="guideSubtitle" style="color: #666; font-size: 0.95rem; margin: 0;">
+          डॉन बॉस्को इन्स्टिट्यूट ऑफ टेक्नॉलॉजी - माहिती तंत्रज्ञान विभाग समुदाय प्रकल्प
+        </p>
+      </div>
+
+      <!-- Hero Visual Representation -->
+      <div id="guideHeroSvg" style="background: linear-gradient(135deg, #e0f7fa 0%, #fff 100%); border: 1px solid #b2ebf2; border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem;">
+        <div style="font-size: 4rem; margin-bottom: 0.5rem;">🌾 💧 🚜</div>
+        <div id="guideDiagramCaption" style="font-size: 0.9rem; font-weight: bold; color: var(--color-primary);">संरचना आकृती व प्रात्यक्षिक रचना</div>
+      </div>
+
+      <!-- Main Body Text -->
+      <div id="guideBody" style="line-height: 1.8; color: #333; font-size: 1.05rem; margin-bottom: 2rem;">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Step-by-Step Construction Guide -->
+      <div style="margin-bottom: 2rem;">
+        <h2 style="color: var(--color-primary); font-size: 1.3rem; margin-bottom: 1rem; border-bottom: 2px solid #eee; padding-bottom: 0.5rem;" data-i18n="step_by_step_heading">
+          🛠️ पायरी-दर-पायरी कृती आराखडा (Step-by-Step Implementation)
+        </h2>
+        <div id="stepsContainer">
+          <!-- Steps injected via JS -->
+        </div>
+      </div>
+
+      <!-- Required Materials and Approximate Cost -->
+      <div style="background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="margin-top: 0; color: #333; font-size: 1.15rem;" data-i18n="materials_cost_heading">
+          📋 आवश्यक साहित्य आणि अंदाजे खर्च
+        </h3>
+        <div id="materialsList">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Important Care and Maintenance Tips -->
+      <div style="border-left: 4px solid #f39c12; background: #fffdf5; padding: 1rem 1.25rem; border-radius: 4px;">
+        <strong style="color: #d35400; font-size: 1rem;" data-i18n="maintenance_note_title">⚠️ देखभाल व सुरक्षिततेची खबरदारी:</strong>
+        <p id="maintenanceTips" style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #555; line-height: 1.6;">
+          पावसाळा सुरू होण्यापूर्वी (मे महिन्याच्या अखेरीस) गाळ काढणे आवश्यक आहे. पाण्याचा इनलेट आणि फिल्टर जाळी वेळोवेळी स्वच्छ करावी.
+        </p>
+      </div>
+    </article>
+
+    <!-- Bottom Related Guides -->
+    <div class="no-print" style="margin-top: 2rem;">
+      <h3 style="color: var(--color-primary); margin-bottom: 1rem;" data-i18n="related_guides_heading">इतर संबंधित मार्गदर्शिका</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;" id="relatedGuidesGrid">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/js/navbar.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script>
+    const sampleGuides = [
+      {
+        id: 1,
+        title_mr: "शेततळे निर्मिती व प्लास्टिक अस्तरीकरण (Farm Pond)",
+        title_en: "Farm Pond Construction & Plastic Lining",
+        category: "शेततळे",
+        situation: "कोरडवाहू शेती, मध्यम ते मोठी जमीन",
+        body_mr: "शेततळे हे पावसाचे वाहून जाणारे पाणी शेतातच अडवून साठवण्यासाठी एक अत्यंत उपयुक्त साधन आहे. यामुळे पिकांना ऐन मोसमात पाण्याची गरज असताना संरक्षित पाणी देता येते. शेततळ्यासाठी शेताचा सर्वात सखल भाग निवडावा जेणेकरून पावसाचे पाणी नैसर्गिकरीत्या तळ्यात येईल.",
+        steps: [
+          { title: "जागेची निवड व मोजणी", desc: "पाणी वाहून येणारा नैसर्गिक मार्ग (Catchment line) शोधा. ३०×३०×३ मीटर आकाराचे शेततळे साधारण १० लाख लिटर साठवणूक करते." },
+          { title: "खोदाई व योग्य उतार", desc: "तळ्याच्या बाजूंचा उतार १:१.५ किंवा १:१ असावा जेणेकरून माती ढासळणार नाही. खोदाईनंतर तळातील दगड-गोटे काढून सपाटीकरण करा." },
+          { title: "चिकणमाती किंवा प्लास्टिक अस्तर", desc: "पाझर रोखण्यासाठी ५०० मायक्रॉन जाडीचे बीआयएस (BIS) प्रमाणित ताडपत्री अस्तर व्यवस्थित पसरवून कडेला खंदकात मातीने दाबावे." },
+          { title: "इनलेट व सिल्ट ट्रॅप (गाळ कुंडी)", desc: "तळ्यात पाणी येण्यापूर्वी एक लहान गाळ कुंडी बनवा जेणेकरून गाळ बाहेरच अडवला जाईल." }
+        ],
+        materials: [
+          { name: "५०० मायक्रॉन एचडीपीई प्लास्टिक अस्तर", cost: "₹३५,००० - ₹६०,०००" },
+          { name: "जेसीबी खोदाई (साधारण २०-२५ तास)", cost: "₹२५,००० - ₹३५,०००" },
+          { name: "इनलेट पाईप्स व दगडी पिचिंग", cost: "₹५,००० - ₹१०,०००" }
+        ],
+        maintenance: "मे महिन्यात तळ्यातील गाळ काढावा. कडेला जनावरे पडू नयेत म्हणून बांबूचे किंवा जाळीचे कुंपण लावावे."
+      },
+      {
+        id: 2,
+        title_mr: "छत जलसंधारण व जलकुंड (Rooftop Rainwater Harvesting)",
+        title_en: "Rooftop Harvesting & Jalkund",
+        category: "छत जलसंधारण",
+        situation: "पिण्याच्या पाण्याची टंचाई, घर व गोठा",
+        body_mr: "घराच्या किंवा गोठ्याच्या छतावर पडणारे पावसाचे शुद्ध पाणी पाईपद्वारे गोळा करून भूमिगत किंवा पृष्ठभागावरील टाकीत साठवले जाऊ शकते. पवार et al. (२०१४) यांच्या सांगलीतील रेणावी गावातील संशोधनानुसार, छतावरील पाण्याने १३०० लोकांची ७८ दिवसांची पिण्याची गरज पूर्ण केली होती.",
+        steps: [
+          { title: "छत व पन्हळी (Gutter) बसवणे", desc: "छताच्या उताराच्या बाजूला पीव्हीसी पन्हळी किंवा पाईप जोडून पाण्याचा प्रवाह एका पाईपमध्ये आणावा." },
+          { title: "पहिला पाऊस बाहेर सोडणे (First-Flush Diverter)", desc: "मोसमातील पहिल्या पावसाच्या पाण्यासोबत छतावरील धूळ वाहून जाते. यासाठी एक टी-जॉइंट व्हॉल्व्ह लावून पहिले पाणी बाहेर काढून द्यावे." },
+          { title: "वाळू-खडी-कोळसा फिल्टर", desc: "पाणी साठवण टाकीत जाण्यापूर्वी वाळू, बारीक खडी आणि लाकडी कोळशाच्या तीन थरांमधून गाळून घ्यावे." },
+          { title: "साठवण टाकी (Storage Tank)", desc: "५,००० ते १०,००० लिटरची पीव्हीसी किंवा सिमेंट टाकीत पाणी साठवून झाकण घट्ट बंद ठेवावे." }
+        ],
+        materials: [
+          { name: "४-इंच पीव्हीसी पाईप व फिटिंग्स", cost: "₹३,००० - ₹६,०००" },
+          { name: "फर्स्ट-फ्लश व्हॉल्व्ह व गाळणी", cost: "₹१,५०० - ₹३,०००" },
+          { name: "५,००० लिटर पीव्हीसी टाकी", cost: "₹१५,००० - ₹२२,०००" }
+        ],
+        maintenance: "प्रत्येक पावसाळ्यापूर्वी छताची स्वच्छता करा. फिल्टरमधील वाळू व कोळसा दरवर्षी धुवून पुन्हा भरा."
+      },
+      {
+        id: 3,
+        title_mr: "विहीर व बोअरवेल पुनर्भरण (Well & Borewell Recharge)",
+        title_en: "Well & Borewell Groundwater Recharge",
+        category: "भूजल पुनर्भरण",
+        situation: "कमी झालेली पाणीपातळी, कोरडी पडलेली विहीर",
+        body_mr: "पावसाचे वाहणारे अतिरिक्त पाणी फिल्टर करून थेट विहिरीत किंवा बोअरवेलमध्ये सोडल्याने भूजल पातळी (Water Table) वेगाने उंचावते. पटोडे et al. (२०२१) यांनी अकोला जिल्ह्यात दाखवून दिले की जलसंधारणामुळे रब्बी हंगामात सिंचन क्षमता लक्षणीय वाढते.",
+        steps: [
+          { title: "पुनर्भरण खड्डा (Recharge Pit) खणणे", desc: "विहिरीपासून ५-१० फूट अंतरावर ३×३×२ मीटर आकाराचा खड्डा खणावा." },
+          { title: "गाळण थर (Filter Bed) तयार करणे", desc: "खड्ड्यात खाली मोठे दगड (४० मिमी), मध्यभागी खडी (२० मिमी) आणि वर वाळू (२ मिमी) भरावी." },
+          { title: "केसिंग पाईप परफोरेशन (बोअरवेलसाठी)", desc: "बोअरवेलच्या वरच्या केसिंग पाईपला लहान छिद्रे पाडून त्यावर नायलॉनची जाळी घट्ट गुंडाळावी." },
+          { title: "स्वच्छ पाणी विहिरीत सोडणे", desc: "फिल्टरमधून शुद्ध झालेले पाणी पाईपद्वारे थेट विहिरीच्या किंवा बोअरवेलच्या तळाकडे सोडावे." }
+        ],
+        materials: [
+          { name: "दगड, खडी व फिल्टर वाळू", cost: "₹२,५०० - ₹४,०००" },
+          { name: "पीव्हीसी पाईप व नायलॉन मेश", cost: "₹१,५०० - ₹२,५००" },
+          { name: "मजुरी खर्च", cost: "₹२,००० - ₹३,५००" }
+        ],
+        maintenance: "गढूळ पाणी थेट विहिरीत जाऊ देऊ नका. फिल्टरची वरची वाळू वर्षातून एकदा स्वच्छ करावी."
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const guideId = parseInt(urlParams.get('id')) || 1;
+      await loadGuideDetails(guideId);
+    });
+
+    async function loadGuideDetails(id) {
+      let guide = sampleGuides.find(g => g.id === id) || sampleGuides[0];
+
+      // Try fetching from backend API
+      try {
+        const apiGuide = await API.get(`/api/learning/${id}`);
+        if (apiGuide) {
+          guide = { ...guide, ...apiGuide };
+        }
+      } catch (e) {
+        console.log('Using bundled rich guide data');
+      }
+
+      const isMr = (localStorage.getItem('lang') || 'mr') === 'mr';
+      document.getElementById('guideCategoryBadge').innerText = guide.category || (isMr ? 'जलसंधारण' : 'Water Conservation');
+      document.getElementById('guideSituationBadge').innerText = guide.situation || (isMr ? 'कोरडवाहू शेती' : 'Rain-fed Agriculture');
+      document.getElementById('guideTitle').innerText = isMr ? (guide.title_mr || guide.title_en) : (guide.title_en || guide.title_mr);
+      document.getElementById('guideBody').innerText = isMr ? (guide.body_mr || guide.body_en) : (guide.body_en || guide.body_mr);
+
+      // Render steps
+      const steps = guide.steps || [
+        { title: "नियोजन व जागा निवड", desc: "पाण्याचा प्रवाह तपासा आणि सुरक्षित जागा निश्चित करा." },
+        { title: "संरचना बांधकाम", desc: "स्थानिक साहित्य व मजुरांच्या मदतीने काम पूर्ण करा." },
+        { title: "गाळणी व तपासणी", desc: "पावसाळा सुरू होण्यापूर्वी रचना व्यवस्थित तपासा." }
+      ];
+      document.getElementById('stepsContainer').innerHTML = steps.map((s, idx) => `
+        <div class="step-box">
+          <div class="step-num">${idx + 1}</div>
+          <div>
+            <h4 style="margin: 0 0 0.25rem 0; color: var(--color-primary); font-size: 1.1rem;">${s.title}</h4>
+            <p style="margin: 0; color: #555; font-size: 0.95rem; line-height: 1.5;">${s.desc}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Render materials
+      const materials = guide.materials || [
+        { name: "स्थानिक दगड, वाळू व माती", cost: "₹२,००० - ₹४,०००" },
+        { name: "पाईप्स व फिटिंग्स", cost: "₹३,००० - ₹६,०००" }
+      ];
+      document.getElementById('materialsList').innerHTML = materials.map(m => `
+        <div class="material-item">
+          <span style="color: #333; font-weight: 500;">${m.name}</span>
+          <strong style="color: var(--color-accent);">${m.cost}</strong>
+        </div>
+      `).join('');
+
+      if (guide.maintenance) {
+        document.getElementById('maintenanceTips').innerText = guide.maintenance;
+      }
+
+      // Render related guides
+      renderRelated(guide.id);
+    }
+
+    function renderRelated(currentId) {
+      const related = sampleGuides.filter(g => g.id !== currentId);
+      document.getElementById('relatedGuidesGrid').innerHTML = related.map(g => `
+        <div class="card" style="padding: 1rem; cursor: pointer; transition: transform 0.2s;" onclick="window.location.href='guide.html?id=${g.id}'">
+          <span class="badge" style="background: #e0f2f1; color: var(--color-primary); font-size: 0.75rem; margin-bottom: 0.5rem; display: inline-block;">${g.category}</span>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--color-primary); font-size: 1rem;">${g.title_mr}</h4>
+          <p style="margin: 0; font-size: 0.85rem; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${g.body_mr}</p>
+        </div>
+      `).join('');
+    }
+
+    function shareGuide() {
+      if (navigator.share) {
+        navigator.share({
+          title: document.getElementById('guideTitle').innerText,
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        API.showToast('मार्गदर्शिकेची लिंक कॉपी झाली!', 'info');
+      }
+    }
+  </script>
+</body>
+</html>

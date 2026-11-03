@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="evidence.title">वैज्ञानिक संशोधन व पुरावे</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 950px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div style="text-align:center;margin-bottom:2rem;">
+            <div style="font-size:3rem;">🔬</div>
+            <h2 data-i18n="evidence.title">वैज्ञानिक संशोधन व पुरावे (What Research Says)</h2>
+            <p style="color:var(--color-text-muted);max-width:750px;margin:0 auto;" data-i18n="evidence.subtitle">
+                महाराष्ट्रातील जलसंधारण आणि पावसाचे पाणी साठवणुकीवरील पीअर-रिव्ह्यू संशोधन निष्कर्षांचा अधिकृत सारांश.
+            </p>
+        </div>
+
+        <div class="grid grid-2" id="evidence-container">
+            <!-- Dynamically populated from /api/evidence -->
+        </div>
+
+        <div style="margin-top:2rem;padding:1rem;background:var(--color-surface-alt);border-radius:var(--radius-md);font-size:0.85rem;color:var(--color-text-muted);" data-i18n-html="evidence.disclaimer">
+            <em>टीप:</em> वरील आकडेवारी ही संबंधित संशोधन पेपरमधील अभ्यासावर आधारित आहे. अचूक पद्धत आणि विस्तृत संदर्भासाठी मूळ शोधनिबंधाचा संदर्भ घ्यावा.
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage } from '/js/i18n.js';
+
+        async function loadEvidence() {
+            const list = await api.get('/evidence', false);
+            const container = document.getElementById('evidence-container');
+            if (!container) return;
+            container.innerHTML = '';
+            const isMr = getCurrentLanguage() === 'mr';
+            const catLabel = isMr ? 'श्रेणी' : 'Category';
+
+            if (list) {
+                list.forEach(e => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h4>${e.authorYear}</h4>
+                            <span class="badge badge-info">${e.region}</span>
+                        </div>
+                        <p style="font-size:0.95rem;line-height:1.7;">
+                            ${isMr ? e.findingMr : e.findingEn}
+                        </p>
+                        <div style="font-size:0.75rem;color:var(--color-text-muted);margin-top:0.5rem;">
+                            ${catLabel}: ${e.category}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        window.addEventListener('languageChange', loadEvidence);
+        loadEvidence();
+    </script>
+</body>
+</html>

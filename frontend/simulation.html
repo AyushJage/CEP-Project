@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="sim.title">दैनिक पाणी साठा सिम्युलेशन</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 950px; margin-top: 2rem; margin-bottom: 3rem;">
+        <div class="card">
+            <h2 data-i18n="sim.title">दैनिक पाणी साठा सिम्युलेशन</h2>
+            <p style="color:var(--color-text-muted);" data-i18n="sim.subtitle">
+                ऐतिहासिक ३६५ दिवसांच्या पावसाच्या आधारे दिवसानिहाय पाणी पातळी, अतिरिक्त साठा आणि दुष्काळ जोखीम तपासा.
+            </p>
+
+            <form id="sim-form" class="grid grid-3" style="margin-top:1.5rem;">
+                <div class="form-group">
+                    <label data-i18n="sim.city">शहर किंवा हवामान केंद्र</label>
+                    <select id="sim-city" required>
+                        <option value="Mumbai" selected>Mumbai</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Nagpur">Nagpur</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="sim.year">सिम्युलेशन वर्ष</label>
+                    <select id="sim-year">
+                        <option value="2020" selected>2020</option>
+                        <option value="2015">2015</option>
+                        <option value="2019">2019</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="sim.area">पाणलोट क्षेत्र (चौ.मी.)</label>
+                    <input type="number" id="sim-area" value="500" required min="50">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="sim.coeff">अपधाव गुणांक</label>
+                    <select id="sim-coeff">
+                        <option value="0.85" selected>0.85</option>
+                        <option value="0.60">0.60</option>
+                        <option value="0.40">0.40</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="sim.capacity">टाकी क्षमता (लिटर)</label>
+                    <input type="number" id="sim-capacity" value="20000" required min="1000">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="sim.demand">दैनिक पाण्याची मागणी (लिटर/दिवस)</label>
+                    <input type="number" id="sim-demand" value="250" required min="10">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:50px;" data-i18n="sim.run">
+                        सिम्युलेशन चालवा
+                    </button>
+                </div>
+            </form>
+
+            <!-- Results Output -->
+            <div id="sim-result-card" style="display:none;margin-top:2rem;">
+                <div class="grid grid-3" style="text-align:center;margin-bottom:1.5rem;">
+                    <div class="stat-tile">
+                        <div class="stat-label">एकूण संकलित पाणी</div>
+                        <div class="stat-value" id="res-sim-harvest" style="color:var(--color-primary);">0 L</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);">वर्षभरात जमा झालेले पाणी</div>
+                    </div>
+                    <div class="stat-tile" style="border-left-color:var(--color-danger);">
+                        <div class="stat-label">पाणी टंचाईचे दिवस</div>
+                        <div class="stat-value" id="res-sim-shortage" style="color:var(--color-danger);">0 दिवस</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);">टाकी कोरडी पडलेले दिवस</div>
+                    </div>
+                    <div class="stat-tile" style="border-left-color:var(--color-warning);">
+                        <div class="stat-label">वाहून गेलेले अतिरिक्त पाणी</div>
+                        <div class="stat-value" id="res-sim-overflow" style="color:var(--color-warning);">0 L</div>
+                        <div style="font-size:0.8rem;color:var(--color-text-muted);">टाकी पूर्ण भरून ओव्हरफ्लो</div>
+                    </div>
+                </div>
+
+                <div style="padding:1rem;background:var(--color-surface-alt);border-radius:var(--radius-md);margin-bottom:1.5rem;">
+                    <strong>सिम्युलेशन विश्लेषण:</strong> <span id="res-sim-verdict">-</span>
+                </div>
+
+                <!-- 365-Day Timeline Chart -->
+                <div class="card" style="margin-bottom:1.5rem;">
+                    <h4>वर्षभरातील पाणी पातळी चढ-उतार (Daily Water Level Timeline)</h4>
+                    <div style="position:relative;height:260px;">
+                        <canvas id="simChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Capacity Sweep Recommendations -->
+                <div class="card" style="background:var(--color-surface-alt);margin-bottom:0;">
+                    <h4>टाकीचा आकार वाढवल्यास टंचाई कशी कमी होईल? (Alternative Sizing Sweep)</h4>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>चाचणी क्षमता (Capacity)</th>
+                                    <th>अपेक्षित टंचाईचे दिवस (Shortage Days)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sweep-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+
+        let simChart = null;
+
+        document.getElementById('sim-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                city: document.getElementById('sim-city').value,
+                year: parseInt(document.getElementById('sim-year').value),
+                catchmentAreaSqm: parseFloat(document.getElementById('sim-area').value),
+                runoffCoeff: parseFloat(document.getElementById('sim-coeff').value),
+                capacityLitres: parseFloat(document.getElementById('sim-capacity').value),
+                dailyDemandLitres: parseFloat(document.getElementById('sim-demand').value)
+            };
+
+            const res = await api.post('/simulation/tank', payload, false);
+            document.getElementById('sim-result-card').style.display = 'block';
+            document.getElementById('res-sim-harvest').textContent = res.totalHarvestedLitres.toLocaleString() + ' L';
+            document.getElementById('res-sim-shortage').textContent = res.shortageDaysCount + ' दिवस';
+            document.getElementById('res-sim-overflow').textContent = res.totalOverflowLitres.toLocaleString() + ' L';
+            document.getElementById('res-sim-verdict').textContent = res.verdict;
+
+            // Render Timeline Chart
+            const timeline = res.sampleTimeline || [];
+            const labels = timeline.map(p => p.date);
+            const levels = timeline.map(p => p.levelLitres);
+
+            const ctx = document.getElementById('simChart').getContext('2d');
+            if (simChart) simChart.destroy();
+
+            simChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'टाकीतील पाणी साठा (लिटर)',
+                        data: levels,
+                        borderColor: '#0B6E99',
+                        backgroundColor: 'rgba(11, 110, 153, 0.15)',
+                        fill: true,
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'लिटर' } }
+                    }
+                }
+            });
+
+            // Sweep Table
+            const tbody = document.getElementById('sweep-tbody');
+            tbody.innerHTML = '';
+            for (const [cap, days] of Object.entries(res.alternativeCapacityShortageDays || {})) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${parseFloat(cap).toLocaleString()} L</strong></td>
+                    <td><span class="badge badge-${days > 30 ? 'danger' : (days > 0 ? 'warning' : 'success')}">${days} दिवस</span></td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            document.getElementById('sim-result-card').scrollIntoView({ behavior: 'smooth' });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="cost.title">खर्च बचत कॅल्क्युलेटर - जलसाथी</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3.5rem;">
+        <div class="card" style="padding: 2rem;">
+            <h2 data-i18n="cost.title" style="margin-bottom:0.35rem;">टँकर खर्च बचत व परतावा कॅल्क्युलेटर</h2>
+            <p data-i18n="cost.subtitle" style="color:var(--color-text-muted);font-size:0.95rem;">
+                पाणी साठवणुकीमुळे विकतच्या पाण्याच्या टँकरवर होणारा खर्च कसा वाचतो आणि रचनेचा खर्च किती वर्षांत वसूल होतो ते पहा.
+            </p>
+
+            <form id="cost-form" class="grid grid-2" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label data-i18n="cost.annual_litres">वार्षिक साठवलेले पाणी (लिटर)</label>
+                    <input type="number" id="c-litres" data-i18n-placeholder="cost.ph_litres" placeholder="उदा. १,००,०००" required min="1000">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="cost.tanker_rate">पाण्याच्या टँकरचा दर (₹ प्रति १००० लिटर)</label>
+                    <input type="number" id="c-tanker" data-i18n-placeholder="cost.ph_tanker" placeholder="उदा. ८००" required min="10">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="cost.pumping_rate">पंपिंग वीज किंवा डिझेल खर्च (₹ प्रति तास)</label>
+                    <input type="number" id="c-pumping-rate" data-i18n-placeholder="cost.ph_pump_rate" placeholder="उदा. ६०" min="0">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="cost.pumping_hours">वार्षिक वाचलेले पंपिंग तास</label>
+                    <input type="number" id="c-pumping-hours" data-i18n-placeholder="cost.ph_pump_hours" placeholder="उदा. १२०" min="0">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label data-i18n="cost.capital">रचना उभारणी भांडवली खर्च (₹)</label>
+                    <input type="number" id="c-cost" data-i18n-placeholder="cost.ph_capital" placeholder="उदा. २५,००० (शेततळे किंवा जलकुंड)" required min="500">
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" style="width:100%;min-height:48px;" data-i18n="cost.btn_calc">
+                        बचत व परतावा काढा
+                    </button>
+                </div>
+            </form>
+
+            <!-- Results Output (Zero Hybrid) -->
+            <div id="cost-result-card" style="display:none;margin-top:2rem;background:var(--color-surface);border:1.5px solid var(--color-success);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow-md);">
+                <h3 data-i18n="cost.res_heading" style="color:var(--color-success);margin-bottom:1.25rem;">💰 आर्थिक बचत व परतावा निष्कर्ष</h3>
+
+                <div class="grid grid-3" style="text-align:center;margin-bottom:1.5rem;">
+                    <div class="stat-tile">
+                        <div class="stat-label" data-i18n="cost.res_tanker_save">वार्षिक टँकर बचत</div>
+                        <div class="stat-value" id="res-tanker-save" style="color:var(--color-success);">₹0</div>
+                        <div class="stat-sub" data-i18n="cost.res_tanker_sub">पाणी विकत घेण्याचे वाचले</div>
+                    </div>
+                    <div class="stat-tile accent-teal">
+                        <div class="stat-label" data-i18n="cost.res_total_save">एकूण वार्षिक बचत</div>
+                        <div class="stat-value" id="res-total-save" style="color:var(--color-primary);">₹0</div>
+                        <div class="stat-sub"><span data-i18n="cost.res_total_sub">दरमहा बचत:</span> ₹<span id="res-month-save">0</span></div>
+                    </div>
+                    <div class="stat-tile accent-amber">
+                        <div class="stat-label" data-i18n="cost.res_payback">खर्च वसुली कालावधी</div>
+                        <div class="stat-value" id="res-payback" style="color:var(--color-text);">0 वर्ष</div>
+                        <div class="stat-sub" data-i18n="cost.res_payback_sub">भांडवल पूर्ण वसूल</div>
+                    </div>
+                </div>
+
+                <div style="padding:1rem 1.25rem;background:var(--color-surface-alt);border-radius:var(--radius-md);margin-bottom:1.25rem;border:1px solid var(--color-border);">
+                    <strong data-i18n="cost.verdict">निष्कर्ष:</strong> <span id="res-verdict">-</span>
+                </div>
+
+                <!-- Academic Research Context -->
+                <div style="font-size:0.85rem;color:var(--color-text-muted);border-top:1px solid var(--color-border);padding-top:1rem;line-height:1.6;" data-i18n="cost.research_note">
+                    📖 संशोधन पुरावा: कार्कर आणि भालेराव (२०१७) यांच्या अभ्यासानुसार साठवणूक खर्च प्रति लिटर १४ पैशांवरून ३ वर्षांत ४.६ पैशांवर येतो. पवार आणि इतर (२०१४) सांगली अभ्यासानुसार पहिल्याच वर्षात रचनेचा खर्च वसूल होतो.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { getCurrentLanguage, t } from '/js/i18n.js';
+
+        let lastResult = null;
+
+        function renderResult() {
+            if (!lastResult) return;
+            const isMr = getCurrentLanguage() === 'mr';
+            const yearWord = isMr ? 'वर्ष' : 'years';
+            const tankerSave = lastResult.tankerSavingsYearly ?? lastResult.tankerCostSavedPerYear ?? 0;
+            const totalSave = lastResult.totalSavingsYearly ?? lastResult.totalAnnualSavings ?? 0;
+            document.getElementById('res-tanker-save').textContent = `₹${tankerSave.toLocaleString()}`;
+            document.getElementById('res-total-save').textContent = `₹${totalSave.toLocaleString()}`;
+            document.getElementById('res-month-save').textContent = Math.round(totalSave / 12).toLocaleString();
+            document.getElementById('res-payback').textContent = `${lastResult.paybackPeriodYears} ${yearWord}`;
+            let verdict = isMr 
+                ? (lastResult.paybackVerdictMr || lastResult.verdictMr) 
+                : (lastResult.paybackVerdictEn || lastResult.verdictEn);
+            if (!verdict) {
+                const raw = lastResult.paybackVerdict || lastResult.verdict || '';
+                verdict = isMr 
+                    ? (raw.includes('(') ? raw.replace(/^[^(]+\(([^)]+)\)$/, '$1') : raw)
+                    : raw.replace(/\([^)]*\)/g, '').trim();
+            }
+            document.getElementById('res-verdict').textContent = verdict;
+        }
+
+        document.getElementById('cost-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                annualHarvestedLitres: parseFloat(document.getElementById('c-litres').value),
+                tankerPricePer1000L: parseFloat(document.getElementById('c-tanker').value),
+                electricityOrDieselPerHour: parseFloat(document.getElementById('c-pumping-rate').value) || 0,
+                pumpingHoursSavedPerYear: parseFloat(document.getElementById('c-pumping-hours').value) || 0,
+                structureCost: parseFloat(document.getElementById('c-cost').value)
+            };
+
+            const res = await api.post('/cost/calculate', payload, false);
+            if (res) {
+                lastResult = res;
+                document.getElementById('cost-result-card').style.display = 'block';
+                renderResult();
+            }
+        };
+
+        window.addEventListener('languageChange', renderResult);
+    </script>
+</body>
+</html>

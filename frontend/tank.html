@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="tank.title">पाणी साठा व टाकी ट्रॅकर</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header></header>
+
+    <main class="container" style="margin-top: 1.5rem; margin-bottom: 3rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h2 data-i18n="tank.title">पाणी साठा व टाकी ट्रॅकर</h2>
+                <p style="color:var(--color-text-muted);margin:0;" data-i18n="tank.subtitle">शेततळे, विहीर व टाक्यांमधील पाणी पातळी व दैनंदिन वापर नोंदवा</p>
+            </div>
+            <button class="btn btn-primary" id="btn-toggle-add-tank" data-i18n="tank.btn_add">+ नवीन टाकी / शेततळे जोडा</button>
+        </div>
+
+        <!-- Add Tank Modal / Inline Form -->
+        <div id="add-tank-card" class="card" style="display:none;background:var(--color-surface-alt);">
+            <div class="card-header">
+                <h3 data-i18n="tank.add_modal_title">नवीन पाणी साठा रचना जोडा</h3>
+                <button class="btn btn-secondary btn-sm" id="btn-close-tank-form" data-i18n="tank.btn_close">✕ बंद करा</button>
+            </div>
+            <form id="add-tank-form" class="grid grid-3">
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_name">टाकी / शेततळ्याचे नाव</label>
+                    <input type="text" id="tank-name" data-i18n-placeholder="tank.ph_name" placeholder="उदा. मुख्य शेततळे किंवा विहीर" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_type">रचनेचा प्रकार</label>
+                    <select id="tank-type" required>
+                        <option value="Farm pond" data-i18n="tank.opt_pond">शेततळे</option>
+                        <option value="Masonry tank" data-i18n="tank.opt_masonry">पक्की सिमेंट टाकी</option>
+                        <option value="Plastic syntax tank" data-i18n="tank.opt_plastic">प्लास्टिक टाकी</option>
+                        <option value="Jalkund" data-i18n="tank.opt_jalkund">जलकुंड</option>
+                        <option value="Recharge pit" data-i18n="tank.opt_recharge">पुनर्भरण खड्डा</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_capacity">एकूण क्षमता (लिटर)</label>
+                    <input type="number" id="tank-capacity" data-i18n-placeholder="tank.ph_capacity" placeholder="उदा. ५००००" min="100" required>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" data-i18n="tank.btn_save">जतन करा</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tanks Grid with Visual Gauges -->
+        <div id="tanks-grid" class="grid grid-2" style="margin-bottom: 2rem;">
+            <!-- Dynamically populated tank cards -->
+        </div>
+
+        <!-- Log Transaction Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 data-i18n="tank.log_heading">📝 पाणी आवक / जावक व्यवहार नोंदवा</h3>
+            </div>
+            <form id="txn-form" class="grid grid-4">
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_select_tank">टाकी निवडा</label>
+                    <select id="txn-tank-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_txn_type">व्यवहार प्रकार</label>
+                    <select id="txn-type" required>
+                        <option value="INFLOW" data-i18n="tank.opt_inflow">पाणी आवक (पाऊस / विहीर भरणा)</option>
+                        <option value="OUTFLOW" data-i18n="tank.opt_outflow">पाणी वापर (सिंचन / वापर)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_txn_litres">पाण्याचे प्रमाण (लिटर)</label>
+                    <input type="number" id="txn-litres" data-i18n-placeholder="tank.ph_txn_litres" placeholder="उदा. ५०००" required min="1">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_purpose">वापराचे कारण</label>
+                    <select id="txn-purpose" required>
+                        <option value="Irrigation" data-i18n="tank.opt_irrigation">पिकांना पाणी</option>
+                        <option value="Rain harvest" data-i18n="tank.opt_rain_harvest">पावसाचे पाणी संकलन</option>
+                        <option value="Drinking" data-i18n="tank.opt_drinking">पिण्याचे पाणी</option>
+                        <option value="Livestock" data-i18n="tank.opt_livestock">जनावरांसाठी</option>
+                        <option value="Domestic" data-i18n="tank.opt_domestic">घरगुती वापर</option>
+                        <option value="Other" data-i18n="tank.opt_other">इतर</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="tank.lbl_date">तारीख</label>
+                    <input type="date" id="txn-date" required>
+                </div>
+                <div class="form-group" style="grid-column: 2 / -1;">
+                    <label data-i18n="tank.lbl_note">टीप</label>
+                    <input type="text" id="txn-note" data-i18n-placeholder="tank.ph_note" placeholder="उदा. ठिबक सिंचनाद्वारे कांदा पिकाला पाणी">
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn btn-primary" data-i18n="tank.btn_record_txn">व्यवहार नोंदवा</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Split Grid: Transactions Log & Usage Chart -->
+        <div class="grid grid-2">
+            <!-- Recent Transactions Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 data-i18n="tank.history_title">हालचालींचा इतिहास</h3>
+                </div>
+                <div class="table-responsive" style="max-height: 350px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="tank.th_date">तारीख</th>
+                                <th data-i18n="tank.th_type">प्रकार</th>
+                                <th data-i18n="tank.th_purpose">कारण</th>
+                                <th data-i18n="tank.th_litres">लिटर</th>
+                            </tr>
+                        </thead>
+                        <tbody id="txn-tbody">
+                            <tr><td colspan="4" style="text-align:center;color:var(--color-text-muted);">...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Usage Breakdown Doughnut Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 data-i18n="tank.chart_title">📊 पाणी वापर वर्गीकरण</h3>
+                </div>
+                <div style="position: relative; height: 260px;">
+                    <canvas id="usageChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script type="module">
+        import { api } from '/js/api.js';
+        import { initNavbar } from '/js/navbar.js';
+        import { t, getCurrentLanguage, translateDOM } from '/js/i18n.js';
+
+        let usageChart = null;
+        let farmerTanks = [];
+
+        function formatStructureName(name) {
+            const lang = getCurrentLanguage();
+            if (!name) return '';
+            if (name.includes('Mukhya Shettale') || name.includes('मुख्य शेततळे')) {
+                return lang === 'en' ? 'Main Farm Pond' : 'मुख्य शेततळे';
+            }
+            const match = name.match(/^([^(]+)\s*\(([^)]+)\)$/);
+            if (match) {
+                return lang === 'en' ? match[1].trim() : match[2].trim();
+            }
+            return name;
+        }
+
+        function formatStructureType(type) {
+            const lang = getCurrentLanguage();
+            const tLower = (type || '').toLowerCase();
+            if (lang === 'mr') {
+                if (tLower.includes('pond') || tLower.includes('शेततळे')) return 'शेततळे';
+                if (tLower.includes('masonry') || tLower.includes('सिमेंट')) return 'पक्की सिमेंट टाकी';
+                if (tLower.includes('plastic') || tLower.includes('प्लास्टिक')) return 'प्लास्टिक टाकी';
+                if (tLower.includes('jalkund') || tLower.includes('जलकुंड')) return 'जलकुंड';
+                if (tLower.includes('recharge') || tLower.includes('पुनर्भरण')) return 'पुनर्भरण खड्डा';
+                return type;
+            } else {
+                if (tLower.includes('pond') || tLower.includes('शेततळे')) return 'Farm Pond';
+                if (tLower.includes('masonry') || tLower.includes('सिमेंट')) return 'Masonry Concrete Tank';
+                if (tLower.includes('plastic') || tLower.includes('प्लास्टिक')) return 'Plastic Storage Tank';
+                if (tLower.includes('jalkund') || tLower.includes('जलकुंड')) return 'Jalkund Micro-Pond';
+                if (tLower.includes('recharge') || tLower.includes('पुनर्भरण')) return 'Groundwater Recharge Pit';
+                return type;
+            }
+        }
+
+        function formatPurpose(purpose) {
+            const lang = getCurrentLanguage();
+            const p = (purpose || '').toLowerCase();
+            if (lang === 'mr') {
+                if (p.includes('irrig') || p.includes('पिक')) return 'पिकांना पाणी';
+                if (p.includes('rain') || p.includes('पाऊस')) return 'पावसाचे पाणी संकलन';
+                if (p.includes('drink') || p.includes('पिण्या')) return 'पिण्याचे पाणी';
+                if (p.includes('live') || p.includes('जनावर')) return 'जनावरांसाठी';
+                if (p.includes('dom') || p.includes('घरगुती')) return 'घरगुती वापर';
+                return 'इतर';
+            } else {
+                if (p.includes('irrig') || p.includes('पिक')) return 'Crop Irrigation';
+                if (p.includes('rain') || p.includes('पाऊस')) return 'Rainwater Harvest';
+                if (p.includes('drink') || p.includes('पिण्या')) return 'Drinking Water';
+                if (p.includes('live') || p.includes('जनावर')) return 'Livestock';
+                if (p.includes('dom') || p.includes('घरगुती')) return 'Domestic Use';
+                return 'Other';
+            }
+        }
+
+        function getStatusBadge(color) {
+            if (color === 'green') {
+                return { badge: 'badge-success', text: t('tank.badge_safe', 'सुरक्षित (>५०%)') };
+            } else if (color === 'amber') {
+                return { badge: 'badge-warning', text: t('tank.badge_mod', 'मध्यम (२०-५०%)') };
+            } else {
+                return { badge: 'badge-danger', text: t('tank.badge_crit', 'टंचाई धोक्याची पातळी (<२०%)') };
+            }
+        }
+
+        async function initPage() {
+            document.getElementById('txn-date').value = new Date().toISOString().split('T')[0];
+            await loadTanks();
+        }
+
+        async function loadTanks() {
+            farmerTanks = await api.get('/tanks');
+            const grid = document.getElementById('tanks-grid');
+            const select = document.getElementById('txn-tank-select');
+            grid.innerHTML = '';
+            select.innerHTML = '';
+
+            if (!farmerTanks || farmerTanks.length === 0) {
+                grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;color:var(--color-text-muted);">${t('tank.empty_tanks', 'कोणतीही पाण्याची रचना अद्याप जोडलेली नाही.')}</div>`;
+                return;
+            }
+
+            farmerTanks.forEach(tItem => {
+                const opt = document.createElement('option');
+                opt.value = tItem.id;
+                opt.textContent = `${formatStructureName(tItem.name)} (${tItem.capacityLitres.toLocaleString()} L)`;
+                select.appendChild(opt);
+
+                const badgeInfo = getStatusBadge(tItem.statusColor);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h4>${formatStructureName(tItem.name)}</h4>
+                        <span class="badge ${badgeInfo.badge}">
+                            ${badgeInfo.text}
+                        </span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+                        <div class="water-tank-gauge" style="width:120px;height:160px;">
+                            <div class="water-fill ${tItem.statusColor}" style="height:${tItem.levelPercentage}%;"></div>
+                            <div class="gauge-overlay" style="font-size:1.3rem;">${tItem.levelPercentage}%</div>
+                        </div>
+                        <div style="flex:1;">
+                            <p style="margin-bottom:0.25rem;"><strong>${t('tank.lbl_card_type', 'प्रकार:')}</strong> ${formatStructureType(tItem.type)}</p>
+                            <p style="margin-bottom:0.25rem;"><strong>${t('tank.lbl_card_cap', 'एकूण क्षमता:')}</strong> ${tItem.capacityLitres.toLocaleString()} L</p>
+                            <p style="margin-bottom:0.25rem;"><strong>${t('tank.lbl_card_water', 'उपलब्ध पाणी:')}</strong> <span style="font-size:1.2rem;font-weight:700;color:var(--color-primary);">${tItem.currentLevelLitres.toLocaleString()} L</span></p>
+                            <button class="btn btn-danger btn-sm delete-tank-btn" data-id="${tItem.id}" style="margin-top:0.75rem;">${t('tank.btn_delete', 'रचना हटवा')}</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            grid.querySelectorAll('.delete-tank-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (confirm(t('tank.confirm_delete', 'ही रचना हटवायची आहे का?'))) {
+                        await api.delete('/tanks/' + btn.dataset.id);
+                        api.showToast(t('tank.toast_deleted', 'टाकी हटवली गेली'), 'info');
+                        loadTanks();
+                    }
+                };
+            });
+
+            if (farmerTanks.length > 0) {
+                loadTransactions(farmerTanks[0].id);
+                loadUsageChart(farmerTanks[0].id);
+            }
+        }
+
+        async function loadTransactions(tankId) {
+            const txns = await api.get(`/tanks/${tankId}/transactions`);
+            const tbody = document.getElementById('txn-tbody');
+            tbody.innerHTML = '';
+
+            if (!txns || txns.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--color-text-muted);">${t('tank.no_txns', 'या टाकीसाठी कोणताही व्यवहार नोंदवलेला नाही.')}</td></tr>`;
+                return;
+            }
+
+            txns.forEach(txn => {
+                const tr = document.createElement('tr');
+                const isIn = txn.type === 'INFLOW';
+                const typeText = isIn ? t('tank.badge_inflow', 'आवक') : t('tank.badge_outflow', 'जावक');
+                tr.innerHTML = `
+                    <td>${txn.txnDate}</td>
+                    <td><span class="badge badge-${isIn ? 'success' : 'warning'}">${typeText}</span></td>
+                    <td>${formatPurpose(txn.purpose)}</td>
+                    <td style="font-weight:700;color:${isIn ? 'var(--color-success)' : 'var(--color-danger)'};">
+                        ${isIn ? '+' : '-'}${txn.litres.toLocaleString()} L
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function loadUsageChart(tankId) {
+            const usage = await api.get(`/tanks/${tankId}/usage`);
+            const rawLabels = Object.keys(usage || {});
+            const dataVals = Object.values(usage || {});
+            const localizedLabels = rawLabels.map(lbl => formatPurpose(lbl));
+
+            const ctx = document.getElementById('usageChart').getContext('2d');
+            if (usageChart) usageChart.destroy();
+
+            const noDataLabel = getCurrentLanguage() === 'en' ? 'No Usage Logged' : 'वापर नोंद नाही';
+            usageChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: localizedLabels.length ? localizedLabels : [noDataLabel],
+                    datasets: [{
+                        data: dataVals.length ? dataVals : [1],
+                        backgroundColor: ['#0284c7', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#14b8a6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Toggle Add Tank
+        document.getElementById('btn-toggle-add-tank').onclick = () => {
+            const form = document.getElementById('add-tank-card');
+            form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+        };
+        document.getElementById('btn-close-tank-form').onclick = () => {
+            document.getElementById('add-tank-card').style.display = 'none';
+        };
+
+        // Submit New Tank
+        document.getElementById('add-tank-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('tank-name').value.trim(),
+                type: document.getElementById('tank-type').value,
+                capacityLitres: parseFloat(document.getElementById('tank-capacity').value)
+            };
+            await api.post('/tanks', payload);
+            api.showToast(t('tank.btn_save', 'जतन करा'), 'success');
+            document.getElementById('add-tank-card').style.display = 'none';
+            document.getElementById('add-tank-form').reset();
+            loadTanks();
+        };
+
+        // Submit Transaction
+        document.getElementById('txn-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const tankId = document.getElementById('txn-tank-select').value;
+            const payload = {
+                type: document.getElementById('txn-type').value,
+                purpose: document.getElementById('txn-purpose').value,
+                litres: parseFloat(document.getElementById('txn-litres').value),
+                txnDate: document.getElementById('txn-date').value,
+                note: document.getElementById('txn-note').value.trim()
+            };
+            try {
+                await api.post(`/tanks/${tankId}/transactions`, payload);
+                api.showToast(t('tank.btn_record_txn', 'व्यवहार नोंदवा'), 'success');
+                document.getElementById('txn-litres').value = '';
+                loadTanks();
+            } catch (err) {}
+        };
+
+        document.getElementById('txn-tank-select').onchange = (e) => {
+            loadTransactions(e.target.value);
+            loadUsageChart(e.target.value);
+        };
+
+        initPage();
+    </script>
+</body>
+</html>
