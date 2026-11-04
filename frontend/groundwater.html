@@ -12,10 +12,10 @@
 <body>
     <header></header>
 
-    <main class="container" style="max-width: 1000px; margin-top: 2rem; margin-bottom: 3rem;">
-        <div class="card">
-            <h2 data-i18n="gw.title">महाराष्ट्र भूजल व विहीर पाणी पातळी</h2>
-            <p style="color:var(--color-text-muted);" data-i18n="gw.summary">
+    <main class="container" style="max-width: 1240px; margin-top: 2.25rem; margin-bottom: 4rem;">
+        <div class="card" style="padding: 2.25rem;">
+            <h2 data-i18n="gw.title" style="font-size:1.85rem;margin-bottom:0.35rem;">महाराष्ट्र भूजल व विहीर पाणी पातळी</h2>
+            <p style="color:var(--color-text-secondary);font-size:1.02rem;" data-i18n="gw.summary">
                 जिल्ह्यातील भूजल वास्तव | केंद्रीय व राज्य भूजल प्राधिकरण
             </p>
 
@@ -53,14 +53,14 @@
             </div>
 
             <!-- Leaflet Map Container -->
-            <div style="position:relative;height:420px;border-radius:var(--radius-lg);overflow:hidden;border:2px solid var(--color-border);margin-bottom:1rem;">
+            <div style="position:relative;height:500px;border-radius:var(--radius-lg);overflow:hidden;border:2px solid var(--color-border);margin-bottom:1.25rem;">
                 <div id="map" style="width:100%;height:100%;"></div>
             </div>
 
-            <div style="display:flex;gap:1.5rem;justify-content:center;font-size:0.85rem;color:var(--color-text);flex-wrap:wrap;">
-                <span>🟢 <strong><span data-i18n="gw.shallow">उथळ पाणी (< ५ मी.)</span></strong>: <span data-i18n="gw.safe">सुरक्षित</span></span>
-                <span>🟠 <strong><span data-i18n="gw.moderate">मध्यम पातळी (५-१५ मी.)</span></strong>: <span data-i18n="gw.moderate_label">मध्यम</span></span>
-                <span>🔴 <strong><span data-i18n="gw.deep">खोल पाणी (> १५ मी.)</span></strong>: <span data-i18n="gw.critical">अति शोषित / टंचाई</span></span>
+            <div style="display:flex;gap:1.75rem;justify-content:center;font-size:0.92rem;color:var(--color-text);flex-wrap:wrap;padding:0.75rem;background:var(--color-surface-alt);border-radius:var(--radius-md);">
+                <span style="display:inline-flex;align-items:center;gap:0.4rem;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10b981;"></span><strong><span data-i18n="gw.shallow">उथळ पाणी (< ५ मी.)</span></strong>: <span data-i18n="gw.safe">सुरक्षित</span></span>
+                <span style="display:inline-flex;align-items:center;gap:0.4rem;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;"></span><strong><span data-i18n="gw.moderate">मध्यम पातळी (५-१५ मी.)</span></strong>: <span data-i18n="gw.moderate_label">मध्यम</span></span>
+                <span style="display:inline-flex;align-items:center;gap:0.4rem;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ef4444;"></span><strong><span data-i18n="gw.deep">खोल पाणी (> १५ मी.)</span></strong>: <span data-i18n="gw.critical">अति शोषित / टंचाई</span></span>
             </div>
         </div>
     </main>

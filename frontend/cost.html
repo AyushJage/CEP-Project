@@ -13,12 +13,18 @@
 <body>
     <header></header>
 
-    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3.5rem;">
-        <div class="card" style="padding: 2rem;">
-            <h2 data-i18n="cost.title" style="margin-bottom:0.35rem;">टँकर खर्च बचत व परतावा कॅल्क्युलेटर</h2>
-            <p data-i18n="cost.subtitle" style="color:var(--color-text-muted);font-size:0.95rem;">
+    <main class="container" style="max-width: 1180px; margin-top: 2.25rem; margin-bottom: 4rem;">
+        <div class="page-header">
+            <div class="page-icon-badge accent-green">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <h1 data-i18n="cost.title" style="margin-bottom:0.5rem; font-size:2.2rem;">टँकर खर्च बचत व परतावा कॅल्क्युलेटर</h1>
+            <p data-i18n="cost.subtitle" style="color:var(--color-text-secondary);max-width:800px;margin:0 auto;font-size:1.05rem;">
                 पाणी साठवणुकीमुळे विकतच्या पाण्याच्या टँकरवर होणारा खर्च कसा वाचतो आणि रचनेचा खर्च किती वर्षांत वसूल होतो ते पहा.
             </p>
+        </div>
+
+        <div class="card" style="padding: 2.25rem;">
 
             <form id="cost-form" class="grid grid-2" style="margin-top: 1.5rem;">
                 <div class="form-group">
@@ -51,7 +57,12 @@
 
             <!-- Results Output (Zero Hybrid) -->
             <div id="cost-result-card" style="display:none;margin-top:2rem;background:var(--color-surface);border:1.5px solid var(--color-success);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow-md);">
-                <h3 data-i18n="cost.res_heading" style="color:var(--color-success);margin-bottom:1.25rem;">💰 आर्थिक बचत व परतावा निष्कर्ष</h3>
+                <h3 data-i18n="cost.res_heading" style="color:var(--color-success);margin-bottom:1.25rem;display:flex;align-items:center;gap:0.6rem;">
+                    <span class="card-icon-pill accent-green" style="width:34px;height:34px;border-radius:10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </span>
+                    <span>आर्थिक बचत व परतावा निष्कर्ष</span>
+                </h3>
 
                 <div class="grid grid-3" style="text-align:center;margin-bottom:1.5rem;">
                     <div class="stat-tile">
@@ -76,8 +87,11 @@
                 </div>
 
                 <!-- Academic Research Context -->
-                <div style="font-size:0.85rem;color:var(--color-text-muted);border-top:1px solid var(--color-border);padding-top:1rem;line-height:1.6;" data-i18n="cost.research_note">
-                    📖 संशोधन पुरावा: कार्कर आणि भालेराव (२०१७) यांच्या अभ्यासानुसार साठवणूक खर्च प्रति लिटर १४ पैशांवरून ३ वर्षांत ४.६ पैशांवर येतो. पवार आणि इतर (२०१४) सांगली अभ्यासानुसार पहिल्याच वर्षात रचनेचा खर्च वसूल होतो.
+                <div style="font-size:0.9rem;color:var(--color-text-secondary);border-top:1px solid var(--color-border);padding-top:1.25rem;line-height:1.7;display:flex;align-items:flex-start;gap:0.75rem;" data-i18n="cost.research_note">
+                    <span class="card-icon-pill" style="width:30px;height:30px;border-radius:8px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    </span>
+                    <span>संशोधन पुरावा: कार्कर आणि भालेराव (२०१७) यांच्या अभ्यासानुसार साठवणूक खर्च प्रति लिटर १४ पैशांवरून ३ वर्षांत ४.६ पैशांवर येतो. पवार आणि इतर (२०१४) सांगली अभ्यासानुसार पहिल्याच वर्षात रचनेचा खर्च वसूल होतो.</span>
                 </div>
             </div>
         </div>

@@ -37,76 +37,117 @@
             <!-- SDG Strip -->
             <div class="sdg-strip">
                 <div class="sdg-card sdg-6">
-                    <span>💧</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
                     <span>SDG 6: Clean Water &amp; Sanitation</span>
                 </div>
                 <div class="sdg-card sdg-13">
-                    <span>🌱</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
                     <span>SDG 13: Climate Action</span>
                 </div>
                 <div class="sdg-card sdg-15">
-                    <span>🌾</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
                     <span>SDG 15: Life on Land</span>
                 </div>
             </div>
         </section>
 
         <!-- Core Features Grid -->
-        <section style="margin-bottom: 3rem;">
-            <div style="text-align:center;margin-bottom:2rem;">
-                <h2 data-i18n="home.features_title">मुख्य वैशिष्ट्ये (Features)</h2>
-                <p style="color:var(--color-text-muted);" data-i18n="home.features_subtitle">शेतकऱ्यांच्या गरजांनुसार विकसित केलेली व्यावहारिक डिजिटल साधने</p>
+        <section style="margin-bottom: 3.5rem;">
+            <div style="text-align:center;margin-bottom:2.5rem;">
+                <h2 data-i18n="home.features_title" style="font-size:2rem;">मुख्य वैशिष्ट्ये (Features)</h2>
+                <p style="color:var(--color-text-secondary);font-size:1.05rem;" data-i18n="home.features_subtitle">शेतकऱ्यांच्या गरजांनुसार विकसित केलेली व्यावहारिक डिजिटल साधने</p>
             </div>
 
             <div class="grid grid-3">
-                <div class="card">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">📐</div>
-                    <h3 data-i18n="nav.calculator">पाऊस व साठवण कॅल्क्युलेटर</h3>
-                    <p data-i18n="home.feat_calc_desc">आपल्या शेतात किंवा छतावर किती लाख लिटर पाणी जमा होऊ शकते याची अचूक गणना करा (१ मि.मी. पाऊस x १ चौ.मी. = १ लिटर).</p>
-                    <a href="/calculator.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_calc_btn">कॅल्क्युलेटर उघडा &rarr;</a>
+                <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0;">
+                    <div>
+                        <div class="card-icon-pill" style="margin-bottom:1.25rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path><path d="M8 14h.01"></path><path d="M12 14h.01"></path><path d="M8 18h.01"></path><path d="M12 18h.01"></path></svg>
+                        </div>
+                        <h3 data-i18n="nav.calculator" style="font-size:1.25rem;margin-bottom:0.6rem;">पाऊस व साठवण कॅल्क्युलेटर</h3>
+                        <p data-i18n="home.feat_calc_desc" style="font-size:0.98rem;line-height:1.7;color:var(--color-text-secondary);">आपल्या शेतात किंवा छतावर किती लाख लिटर पाणी जमा होऊ शकते याची अचूक गणना करा (१ मि.मी. पाऊस x १ चौ.मी. = १ लिटर).</p>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="/calculator.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_calc_btn">कॅल्क्युलेटर उघडा &rarr;</a>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🚰</div>
-                    <h3 data-i18n="nav.tanks">पाणी साठा व टाकी ट्रॅकर</h3>
-                    <p data-i18n="home.feat_tank_desc">शेततळे किंवा पाण्याच्या टाकीतील रोजची आवक-जावक नोंदवा. पाणी पातळी २०% च्या खाली गेल्यास स्वयंचलित अलर्ट मिळवा.</p>
-                    <a href="/tank.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_tank_btn">टाकी ट्रॅकर &rarr;</a>
+                <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0;">
+                    <div>
+                        <div class="card-icon-pill accent-teal" style="margin-bottom:1.25rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                        </div>
+                        <h3 data-i18n="nav.tanks" style="font-size:1.25rem;margin-bottom:0.6rem;">पाणी साठा व टाकी ट्रॅकर</h3>
+                        <p data-i18n="home.feat_tank_desc" style="font-size:0.98rem;line-height:1.7;color:var(--color-text-secondary);">शेततळे किंवा पाण्याच्या टाकीतील रोजची आवक-जावक नोंदवा. पाणी पातळी २०% च्या खाली गेल्यास स्वयंचलित अलर्ट मिळवा.</p>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="/tank.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_tank_btn">टाकी ट्रॅकर &rarr;</a>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🧪</div>
-                    <h3 data-i18n="nav.fertility">मातीची सुपीकता तपासणी</h3>
-                    <p data-i18n="home.feat_fert_desc">मातीचे नत्र, स्फुरद, पालाश व सामू (pH) तपासून १०० पैकी सुपीकता गुण मिळवा आणि सेंद्रिय उपाययोजनांची माहिती घ्या.</p>
-                    <a href="/fertility.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_fert_btn">सुपीकता तपासा &rarr;</a>
+                <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0;">
+                    <div>
+                        <div class="card-icon-pill accent-green" style="margin-bottom:1.25rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31L4.35 19.34A2 2 0 0 0 6.07 22h11.86a2 2 0 0 0 1.72-2.66L14 9.31V2"></path><line x1="8.5" y1="2" x2="15.5" y2="2"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+                        </div>
+                        <h3 data-i18n="nav.fertility" style="font-size:1.25rem;margin-bottom:0.6rem;">मातीची सुपीकता तपासणी</h3>
+                        <p data-i18n="home.feat_fert_desc" style="font-size:0.98rem;line-height:1.7;color:var(--color-text-secondary);">मातीचे नत्र, स्फुरद, पालाश व सामू (pH) तपासून १०० पैकी सुपीकता गुण मिळवा आणि सेंद्रिय उपाययोजनांची माहिती घ्या.</p>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="/fertility.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_fert_btn">सुपीकता तपासा &rarr;</a>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🤖</div>
-                    <h3 data-i18n="nav.ai">एआय हंगामी पाऊस व पिक सल्ला</h3>
-                    <p data-i18n="home.feat_ai_desc">११५ वर्षांच्या ऐतिहासिक पावसाच्या नोंदींवर आधारित आपल्या जिल्ह्यासाठी हंगामी पाऊस अंदाज व पाणी नियोजनाचा ताळेबंद.</p>
-                    <a href="/ai-assist.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_ai_btn">एआय सहाय्यक &rarr;</a>
+                <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0;">
+                    <div>
+                        <div class="card-icon-pill" style="margin-bottom:1.25rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></svg>
+                        </div>
+                        <h3 data-i18n="nav.ai" style="font-size:1.25rem;margin-bottom:0.6rem;">एआय हंगामी पाऊस व पिक सल्ला</h3>
+                        <p data-i18n="home.feat_ai_desc" style="font-size:0.98rem;line-height:1.7;color:var(--color-text-secondary);">११५ वर्षांच्या ऐतिहासिक पावसाच्या नोंदींवर आधारित आपल्या जिल्ह्यासाठी हंगामी पाऊस अंदाज व पाणी नियोजनाचा ताळेबंद.</p>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="/ai-assist.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_ai_btn">एआय सहाय्यक &rarr;</a>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">💰</div>
-                    <h3 data-i18n="nav.cost">टँकर खर्च बचत कॅल्क्युलेटर</h3>
-                    <p data-i18n="home.feat_cost_desc">पाणी साठवणुकीमुळे दरवर्षी विकतच्या टँकरवरील किती हजार रुपयांची बचत होते आणि रचनेचा खर्च किती दिवसांत वसूल होतो ते पहा.</p>
-                    <a href="/cost.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_cost_btn">खर्च बचत मोजा &rarr;</a>
+                <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0;">
+                    <div>
+                        <div class="card-icon-pill accent-amber" style="margin-bottom:1.25rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <h3 data-i18n="nav.cost" style="font-size:1.25rem;margin-bottom:0.6rem;">टँकर खर्च बचत कॅल्क्युलेटर</h3>
+                        <p data-i18n="home.feat_cost_desc" style="font-size:0.98rem;line-height:1.7;color:var(--color-text-secondary);">पाणी साठवणुकीमुळे दरवर्षी विकतच्या टँकरवरील किती हजार रुपयांची बचत होते आणि रचनेचा खर्च किती दिवसांत वसूल होतो ते पहा.</p>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="/cost.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_cost_btn">खर्च बचत मोजा &rarr;</a>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🗺️</div>
-                    <h3 data-i18n="nav.groundwater">महाराष्ट्र भूजल नकाशा</h3>
-                    <p data-i18n="home.feat_gw_desc">केंद्रीय व राज्य भूजल मंडळाच्या (WRIS) निरीक्षण विहिरींचा थेट नकाशा व आपल्या तालुक्यातील पाण्याची पातळी तपासा.</p>
-                    <a href="/groundwater.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_gw_btn">नकाशा पहा &rarr;</a>
+                <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0;">
+                    <div>
+                        <div class="card-icon-pill accent-teal" style="margin-bottom:1.25rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                        </div>
+                        <h3 data-i18n="nav.groundwater" style="font-size:1.25rem;margin-bottom:0.6rem;">महाराष्ट्र भूजल नकाशा</h3>
+                        <p data-i18n="home.feat_gw_desc" style="font-size:0.98rem;line-height:1.7;color:var(--color-text-secondary);">केंद्रीय व राज्य भूजल मंडळाच्या (WRIS) निरीक्षण विहिरींचा थेट नकाशा व आपल्या तालुक्यातील पाण्याची पातळी तपासा.</p>
+                    </div>
+                    <div style="margin-top:1.5rem;">
+                        <a href="/groundwater.html" class="btn btn-secondary btn-sm" data-i18n="home.feat_gw_btn">नकाशा पहा &rarr;</a>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Government Schemes Informational Card -->
-        <section class="card" style="background:var(--color-surface-alt);border:2px dashed var(--color-primary);margin-bottom:3rem;">
-            <div class="card-header">
-                <h3 data-i18n="home.schemes_title">🏛️ महाराष्ट्र राज्य शासकीय योजना माहिती (Government Schemes)</h3>
+        <section class="card" style="background:var(--color-surface-alt);border:1.5px solid var(--color-primary-border);margin-bottom:3.5rem;padding:2.25rem;">
+            <div class="card-header" style="border-bottom-color:var(--color-border);">
+                <h3 data-i18n="home.schemes_title" style="display:flex;align-items:center;gap:0.6rem;">
+                    <span class="card-icon-pill" style="width:36px;height:36px;border-radius:10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V10"></path><path d="M19 21V10"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path><path d="M2 10l10-7 10 7"></path></svg>
+                    </span>
+                    <span>महाराष्ट्र राज्य शासकीय योजना माहिती (Government Schemes)</span>
+                </h3>
                 <span class="badge badge-info" data-i18n="home.schemes_badge">माहिती मार्गदर्शक</span>
             </div>
             <p data-i18n-html="home.schemes_desc">

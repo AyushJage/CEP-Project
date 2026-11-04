@@ -25,7 +25,7 @@
         <div id="add-tank-card" class="card" style="display:none;background:var(--color-surface-alt);">
             <div class="card-header">
                 <h3 data-i18n="tank.add_modal_title">नवीन पाणी साठा रचना जोडा</h3>
-                <button class="btn btn-secondary btn-sm" id="btn-close-tank-form" data-i18n="tank.btn_close">✕ बंद करा</button>
+                <button class="btn btn-secondary btn-sm" id="btn-close-tank-form" data-i18n="tank.btn_close">बंद करा</button>
             </div>
             <form id="add-tank-form" class="grid grid-3">
                 <div class="form-group">
@@ -60,7 +60,12 @@
         <!-- Log Transaction Form Card -->
         <div class="card">
             <div class="card-header">
-                <h3 data-i18n="tank.log_heading">📝 पाणी आवक / जावक व्यवहार नोंदवा</h3>
+                <h3 data-i18n="tank.log_heading" style="display:flex;align-items:center;gap:0.6rem;">
+                    <span class="card-icon-pill" style="width:34px;height:34px;border-radius:10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </span>
+                    <span>पाणी आवक / जावक व्यवहार नोंदवा</span>
+                </h3>
             </div>
             <form id="txn-form" class="grid grid-4">
                 <div class="form-group">
@@ -130,7 +135,12 @@
             <!-- Usage Breakdown Doughnut Chart -->
             <div class="card">
                 <div class="card-header">
-                    <h3 data-i18n="tank.chart_title">📊 पाणी वापर वर्गीकरण</h3>
+                    <h3 data-i18n="tank.chart_title" style="display:flex;align-items:center;gap:0.6rem;">
+                        <span class="card-icon-pill accent-teal" style="width:34px;height:34px;border-radius:10px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                        </span>
+                        <span>पाणी वापर वर्गीकरण</span>
+                    </h3>
                 </div>
                 <div style="position: relative; height: 260px;">
                     <canvas id="usageChart"></canvas>

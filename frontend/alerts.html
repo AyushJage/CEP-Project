@@ -10,26 +10,36 @@
 <body>
     <header></header>
 
-    <main class="container" style="max-width: 900px; margin-top: 2rem; margin-bottom: 3rem;">
-        <div class="card">
-            <h2 data-i18n="alerts.page_title">सूचना व देखभाल आठवणी</h2>
-            <p style="color:var(--color-text-muted);" data-i18n="alerts.subtitle">
+    <main class="container" style="max-width: 1200px; margin-top: 2.25rem; margin-bottom: 4rem;">
+        <div class="card" style="padding: 2.25rem;">
+            <h2 data-i18n="alerts.page_title" style="font-size:1.85rem;margin-bottom:0.35rem;">सूचना व देखभाल आठवणी</h2>
+            <p style="color:var(--color-text-secondary);font-size:1.02rem;" data-i18n="alerts.subtitle">
                 पाणी साठा पातळी, आगामी मान्सूनपूर्व कामांची यादी आणि सुरक्षिततेचे इशारे.
             </p>
 
-            <div class="grid grid-2" style="margin-top: 1.5rem;">
+            <div class="grid grid-2" style="margin-top: 2rem;">
                 <!-- Alerts Column -->
                 <div>
-                    <h3 data-i18n="alerts.recent">🔔 ताज्या सूचना</h3>
-                    <div id="alerts-list" style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+                    <h3 data-i18n="alerts.recent" style="display:flex;align-items:center;gap:0.6rem;font-size:1.25rem;">
+                        <span class="card-icon-pill accent-amber" style="width:34px;height:34px;border-radius:10px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        </span>
+                        <span>ताज्या सूचना</span>
+                    </h3>
+                    <div id="alerts-list" style="margin-top:1.25rem;display:flex;flex-direction:column;gap:0.85rem;">
                         <p style="color:var(--color-text-muted);">...</p>
                     </div>
                 </div>
 
                 <!-- Maintenance Checklist Column -->
                 <div>
-                    <h3 data-i18n="alerts.maintenance">🛠️ नियतकालिक देखभाल यादी</h3>
-                    <div id="tasks-list" style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+                    <h3 data-i18n="alerts.maintenance" style="display:flex;align-items:center;gap:0.6rem;font-size:1.25rem;">
+                        <span class="card-icon-pill accent-teal" style="width:34px;height:34px;border-radius:10px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                        </span>
+                        <span>नियतकालिक देखभाल यादी</span>
+                    </h3>
+                    <div id="tasks-list" style="margin-top:1.25rem;display:flex;flex-direction:column;gap:0.85rem;">
                         <p style="color:var(--color-text-muted);">...</p>
                     </div>
                 </div>
@@ -55,8 +65,8 @@
                 alerts.forEach(a => {
                     const isLow = a.type === 'LOW_TANK';
                     const alertTitle = isLow 
-                        ? (lang === 'en' ? '⚠️ Water Level Critical' : '⚠️ पाणी पातळी धोक्याची पातळी') 
-                        : (lang === 'en' ? '🔔 Advisory Notice' : '🔔 सूचना');
+                        ? (lang === 'en' ? 'Water Level Critical' : 'पाणी पातळी धोक्याची पातळी') 
+                        : (lang === 'en' ? 'Advisory Notice' : 'सूचना');
                     const defaultMsg = isLow 
                         ? (lang === 'en' ? 'Tank water level dropped below 20% capacity.' : 'टाकीतील पाणी पातळी २०% च्या खाली गेली आहे.')
                         : '';
@@ -105,7 +115,7 @@
                                 <strong>${tItem.titleKey}</strong>
                                 <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--color-text-muted);">${tankLbl} ${tItem.tankName || '-'} | ${dueLbl} ${tItem.dueDate || '-'}</p>
                             </div>
-                            ${!isDone ? `<button class="btn btn-primary btn-sm mark-done-btn" data-id="${tItem.id}">${t('alerts.mark_done', 'पूर्ण झाले ✓')}</button>` : `<span class="badge badge-success">${t('alerts.done', 'पूर्ण ✓')}</span>`}
+                            ${!isDone ? `<button class="btn btn-primary btn-sm mark-done-btn" data-id="${tItem.id}">${t('alerts.mark_done', 'पूर्ण झाले')}</button>` : `<span class="badge badge-success">${t('alerts.done', 'पूर्ण')}</span>`}
                         </div>
                     `;
                     tList.appendChild(div);

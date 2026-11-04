@@ -14,24 +14,27 @@
 <body>
     <header></header>
 
-    <main class="container" style="max-width: 1060px; margin-top: 2rem; margin-bottom: 3.5rem;">
-        <div style="text-align:center;margin-bottom:2rem;">
-            <div style="font-size:3rem;margin-bottom:0.25rem;">🤖</div>
-            <h2 data-i18n="ai.title" style="margin-bottom:0.35rem;">एआय सहाय्यक</h2>
-            <p data-i18n="ai.subtitle" style="color:var(--color-text-muted);max-width:750px;margin:0 auto;font-size:0.95rem;">
+    <main class="container" style="margin-top: 2.25rem; margin-bottom: 4rem;">
+        <div class="page-header">
+            <div class="page-icon-badge">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></svg>
+            </div>
+            <h1 data-i18n="ai.title" style="margin-bottom:0.5rem; font-size:2.2rem;">एआय सहाय्यक</h1>
+            <p data-i18n="ai.subtitle" style="color:var(--color-text-secondary);max-width:820px;margin:0 auto;font-size:1.05rem;">
                 Kaggle आणि भारतीय हवामान विभाग (IMD) च्या ११५ वर्षांच्या ऐतिहासिक डेटावर आधारित मशीन लर्निंग अंदाज.
             </p>
-            <div style="margin-top:0.75rem;font-size:0.85rem;color:#b45309;background:var(--color-warning-bg);border:1px solid var(--color-warning-border);padding:0.4rem 0.85rem;border-radius:var(--radius-sm);display:inline-block;" data-i18n="ai.warning">
-                ⚠️ सल्ला मार्गदर्शक: हे अंदाज मार्गदर्शनासाठी आहेत. अंतिम पेरणीपूर्वी आपल्या स्थानिक तालुका कृषी अधिकाऱ्यांचा सल्ला घ्यावा.
+            <div style="margin-top:1rem;font-size:0.9rem;color:#b45309;background:var(--color-warning-bg);border:1px solid var(--color-warning-border);padding:0.55rem 1.25rem;border-radius:var(--radius-full);display:inline-flex;align-items:center;gap:0.5rem;" data-i18n="ai.warning">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span>सल्ला मार्गदर्शक: हे अंदाज मार्गदर्शनासाठी आहेत. अंतिम पेरणीपूर्वी आपल्या स्थानिक तालुका कृषी अधिकाऱ्यांचा सल्ला घ्यावा.</span>
             </div>
         </div>
 
-        <!-- 4 Big AI Cards Tab Buttons (Zero Hybrid) -->
-        <div style="display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem;">
-            <button class="btn btn-primary btn-sm" id="tab-rain" data-i18n="ai.tab_rain">🌧️ १. पाऊस अंदाज</button>
-            <button class="btn btn-secondary btn-sm" id="tab-crop" data-i18n="ai.tab_crop">🌾 २. पिक शिफारस</button>
-            <button class="btn btn-secondary btn-sm" id="tab-plan" data-i18n="ai.tab_plan">💧 ३. पाणी ताळेबंद</button>
-            <button class="btn btn-secondary btn-sm" id="tab-info" data-i18n="ai.tab_info">ℹ️ ४. मॉडेल माहिती</button>
+        <!-- 4 Big AI Cards Tab Buttons -->
+        <div style="display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:2.5rem;">
+            <button class="btn btn-primary" id="tab-rain" data-i18n="ai.tab_rain">१. पाऊस अंदाज</button>
+            <button class="btn btn-secondary" id="tab-crop" data-i18n="ai.tab_crop">२. पिक शिफारस</button>
+            <button class="btn btn-secondary" id="tab-plan" data-i18n="ai.tab_plan">३. पाणी ताळेबंद</button>
+            <button class="btn btn-secondary" id="tab-info" data-i18n="ai.tab_info">४. मॉडेल माहिती</button>
         </div>
 
         <!-- Section 1: Seasonal Rainfall Forecast -->
